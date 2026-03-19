@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DARKNET // NEXUS v4.2.1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #000;
+            color: #00ff41;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* === MATRIX CANVAS BACKGROUND === */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.18;
+        }
+
+        /* === SCANLINES OVERLAY === */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: repeating-linear-gradient(to bottom,
+                    transparent 0px,
+                    transparent 3px,
+                    rgba(0, 0, 0, 0.12) 3px,
+                    rgba(0, 0, 0, 0.12) 4px);
+            pointer-events: none;
+        }
+
+        /* === VIGNETTE === */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.85) 100%);
+            pointer-events: none;
+        }
+
+        /* === MAIN LAYOUT === */
+        .ui-root {
+            position: relative;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: 260px 1fr 260px;
+            grid-template-rows: 48px 1fr 38px;
+            height: 100vh;
+            width: 100vw;
+            gap: 0;
+            padding: 8px;
+            gap: 6px;
+        }
+
+        /* === TOP BAR === */
+        .topbar {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #00ff4133;
+            background: rgba(0, 20, 0, 0.7);
+            padding: 0 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        .topbar-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 900;
+            color: #00ff41;
+            letter-spacing: 4px;
+            text-shadow: 0 0 12px #00ff41;
+        }
+
+        .topbar-logo span {
+            color: #ff0040;
+        }
+
+        .topbar-status {
+            display: flex;
+            gap: 24px;
+            font-size: 11px;
+            color: #00cc33;
+        }
+
+        .topbar-status .live::before {
+            content: '● ';
+            color: #ff0040;
+            animation: blink 1s infinite;
+        }
+
+        .topbar-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            color: #00ff41;
+            text-shadow: 0 0 8px #00ff41;
+        }
+
+        /* === PANELS === */
+        .panel {
+            border: 1px solid #00ff4122;
+            background: rgba(0, 8, 0, 0.78);
+            backdrop-filter: blur(6px);
+            padding: 10px 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: #00ff41aa;
+            border-bottom: 1px solid #00ff4122;
+            padding-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        /* === LEFT PANEL - NODE MAP === */
+        .left-panel {
+            grid-row: 2;
+        }
+
+        .node-list {
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .node-list .node {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .node-list .node .addr {
+            color: #00ff41cc;
+        }
+
+        .node-list .node .status-ok {
+            color: #00ff41;
+        }
+
+        .node-list .node .status-warn {
+            color: #ffaa00;
+        }
+
+        .node-list .node .status-dead {
+            color: #ff0040;
+        }
+
+        .ping-bar {
+            margin-top: 4px;
+        }
+
+        .ping-bar-track {
+            height: 3px;
+            background: #002200;
+            border-radius: 2px;
+            margin-top: 2px;
+        }
+
+        .ping-bar-fill {
+            height: 3px;
+            border-radius: 2px;
+            background: #00ff41;
+            box-shadow: 0 0 6px #00ff41;
+            animation: pingAnim 3s ease-in-out infinite alternate;
+        }
+
+        .crypto-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            padding: 3px 0;
+            border-bottom: 1px solid #00ff4110;
+        }
+
+        .crypto-row .sym {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .crypto-row .price {
+            color: #fff;
+        }
+
+        .crypto-row .change-up {
+            color: #00ff41;
+        }
+
+        .crypto-row .change-down {
+            color: #ff0040;
+        }
+
+        /* === CENTER - MAIN TERMINAL === */
+        .center-panel {
+            grid-row: 2;
+            position: relative;
+        }
+
+        .terminal-body {
+            font-size: 11.5px;
+            line-height: 1.75;
+            overflow: hidden;
+            flex: 1;
+            height: 100%;
+        }
+
+        .terminal-body .line {
+            display: flex;
+            gap: 8px;
+        }
+
+        .terminal-body .prompt {
+            color: #ff0040;
+            white-space: nowrap;
+        }
+
+        .terminal-body .cmd {
+            color: #00ff41;
+        }
+
+        .terminal-body .out {
+            color: #00cc33cc;
+        }
+
+        .terminal-body .dim {
+            color: #00ff4155;
+        }
+
+        .terminal-body .warn {
+            color: #ffaa00;
+        }
+
+        .terminal-body .success {
+            color: #00ff41;
+            text-shadow: 0 0 8px #00ff41;
+        }
+
+        .terminal-body .data {
+            color: #aaffcc;
+        }
+
+        .terminal-body .red {
+            color: #ff0040;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #00ff41;
+            vertical-align: middle;
+            animation: blink 0.8s step-end infinite;
+            box-shadow: 0 0 8px #00ff41;
+        }
+
+        /* === RIGHT PANEL === */
+        .right-panel {
+            grid-row: 2;
+        }
+
+        .activity-item {
+            font-size: 10.5px;
+            line-height: 1.7;
+            border-left: 2px solid #00ff4133;
+            padding-left: 8px;
+            margin-bottom: 6px;
+        }
+
+        .activity-item .ts {
+            color: #00ff4166;
+            font-size: 10px;
+        }
+
+        .activity-item .msg {
+            color: #00cc33;
+        }
+
+        .activity-item.alert .msg {
+            color: #ff0040;
+        }
+
+        .activity-item.warn .msg {
+            color: #ffaa00;
+        }
+
+        .progress-wrap {
+            margin-top: 2px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #00ff4188;
+            margin-bottom: 3px;
+        }
+
+        .progress-track {
+            height: 4px;
+            background: #001a00;
+            border-radius: 2px;
+        }
+
+        .progress-fill {
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #00ff41, #00cc33);
+            box-shadow: 0 0 8px #00ff41;
+            transition: width 1s;
+        }
+
+        /* === BOTTOM BAR === */
+        .bottombar {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #00ff4122;
+            background: rgba(0, 10, 0, 0.8);
+            padding: 0 14px;
+            font-size: 10px;
+            color: #00ff4177;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .ticker {
+            display: flex;
+            gap: 28px;
+            white-space: nowrap;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .ticker span {
+            color: #00ff41aa;
+        }
+
+        .ticker span b {
+            color: #00ff41;
+        }
+
+        /* === MAP SVG === */
+        .net-map {
+            width: 100%;
+            flex: 1;
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes pingAnim {
+            0% {
+                width: 20%;
+            }
+
+            100% {
+                width: 95%;
+            }
+        }
+
+        @keyframes glitch {
+
+            0%,
+            95%,
+            100% {
+                transform: none;
+                text-shadow: 0 0 12px #00ff41;
+            }
+
+            96% {
+                transform: skewX(-5deg);
+                text-shadow: -3px 0 #ff0040, 3px 0 #00ffff;
+            }
+
+            98% {
+                transform: skewX(3deg);
+                text-shadow: 2px 0 #ff0040;
+            }
+        }
+
+        .topbar-logo {
+            animation: glitch 6s infinite;
+        }
+
+        @keyframes fadeInLine {
+            from {
+                opacity: 0;
+                transform: translateX(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .terminal-body .line {
+            animation: fadeInLine 0.3s ease both;
+        }
+
+        .terminal-body .line:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .terminal-body .line:nth-child(2) {
+            animation-delay: 0.25s;
+        }
+
+        .terminal-body .line:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .terminal-body .line:nth-child(4) {
+            animation-delay: 0.55s;
+        }
+
+        .terminal-body .line:nth-child(5) {
+            animation-delay: 0.7s;
+        }
+
+        .terminal-body .line:nth-child(6) {
+            animation-delay: 0.85s;
+        }
+
+        .terminal-body .line:nth-child(7) {
+            animation-delay: 1.0s;
+        }
+
+        .terminal-body .line:nth-child(8) {
+            animation-delay: 1.15s;
+        }
+
+        .terminal-body .line:nth-child(9) {
+            animation-delay: 1.3s;
+        }
+
+        .terminal-body .line:nth-child(10) {
+            animation-delay: 1.45s;
+        }
+
+        .terminal-body .line:nth-child(11) {
+            animation-delay: 1.6s;
+        }
+
+        .terminal-body .line:nth-child(12) {
+            animation-delay: 1.75s;
+        }
+
+        .terminal-body .line:nth-child(13) {
+            animation-delay: 1.9s;
+        }
+
+        .terminal-body .line:nth-child(14) {
+            animation-delay: 2.05s;
+        }
+
+        .terminal-body .line:nth-child(15) {
+            animation-delay: 2.2s;
+        }
+
+        .terminal-body .line:nth-child(16) {
+            animation-delay: 2.35s;
+        }
+
+        .terminal-body .line:nth-child(17) {
+            animation-delay: 2.5s;
+        }
+
+        .terminal-body .line:nth-child(18) {
+            animation-delay: 2.65s;
+        }
+
+        .terminal-body .line:nth-child(19) {
+            animation-delay: 2.8s;
+        }
+
+        .terminal-body .line:nth-child(20) {
+            animation-delay: 2.95s;
+        }
+
+        .terminal-body .line:nth-child(21) {
+            animation-delay: 3.1s;
+        }
+
+        .terminal-body .line:nth-child(22) {
+            animation-delay: 3.25s;
+        }
+
+        .terminal-body .line:nth-child(23) {
+            animation-delay: 3.4s;
+        }
+
+        .terminal-body .line:nth-child(24) {
+            animation-delay: 3.55s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="matrix-bg"></canvas>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <div class="ui-root">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <div class="topbar-logo">DARK<span>NET</span> // NEXUS</div>
+            <div class="topbar-status">
+                <span class="live">LIVE</span>
+                <span>TOR CHAIN: <b>7-HOP</b></span>
+                <span>NODES: <b>2,847</b></span>
+                <span>ENCRYPTED</span>
+            </div>
+            <div class="topbar-time" id="clock">--:--:--</div>
+        </div>
+
+        <!-- LEFT PANEL -->
+        <div class="panel left-panel">
+            <div class="panel-title">// NODE NETWORK</div>
+
+            <div class="node-list">
+                <div class="node"><span class="addr">193.xx.241.07</span><span class="status-ok">ACTIVE</span></div>
+                <div class="node"><span class="addr">85.xx.113.204</span><span class="status-ok">ACTIVE</span></div>
+                <div class="node"><span class="addr">178.xx.9.88</span> <span class="status-warn">SLOW</span></div>
+                <div class="node"><span class="addr">45.xx.67.111</span> <span class="status-ok">ACTIVE</span></div>
+                <div class="node"><span class="addr">91.xx.229.45</span> <span class="status-dead">DEAD</span></div>
+                <div class="node"><span class="addr">77.xx.41.200</span> <span class="status-ok">ACTIVE</span></div>
+                <div class="node"><span class="addr">104.xx.18.9</span> <span class="status-ok">ACTIVE</span></div>
+                <div class="node"><span class="addr">198.xx.57.33</span> <span class="status-warn">SLOW</span></div>
+            </div>
+
+            <div style="margin-top:6px;">
+                <div class="panel-title">// BANDWIDTH</div>
+                <div class="ping-bar">
+                    <div style="font-size:10px; color:#00ff4188; display:flex; justify-content:space-between;"><span>↑
+                            UPLOAD</span><span>4.2 MB/s</span></div>
+                    <div class="ping-bar-track">
+                        <div class="ping-bar-fill" style="width:62%;"></div>
+                    </div>
+                </div>
+                <div class="ping-bar">
+                    <div
+                        style="font-size:10px; color:#00ff4188; display:flex; justify-content:space-between; margin-top:6px;">
+                        <span>↓ DOWNLOAD</span><span>11.8 MB/s</span></div>
+                    <div class="ping-bar-track">
+                        <div class="ping-bar-fill" style="width:85%; animation-delay:-1s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:6px;">
+                <div class="panel-title">// CRYPTO WALLET</div>
+                <div class="crypto-row"><span class="sym">BTC</span><span class="price">$98,241</span><span
+                        class="change-up">+3.2%</span></div>
+                <div class="crypto-row"><span class="sym">XMR</span><span class="price">$174.50</span><span
+                        class="change-up">+1.8%</span></div>
+                <div class="crypto-row"><span class="sym">ETH</span><span class="price">$3,881</span><span
+                        class="change-down">-0.7%</span></div>
+                <div class="crypto-row"><span class="sym">ZEC</span><span class="price">$42.10</span><span
+                        class="change-up">+5.1%</span></div>
+                <div style="margin-top:8px; font-size:11px; color:#00ff4188;">
+                    BALANCE: <span style="color:#00ff41; font-weight:bold; text-shadow:0 0 8px #00ff41;">₿
+                        14.7731</span>
+                </div>
+                <div style="font-size:10px; color:#00ff4155;">≈ $1,451,200 USD</div>
+            </div>
+        </div>
+
+        <!-- CENTER TERMINAL -->
+        <div class="panel center-panel">
+            <div class="panel-title">// SECURE SHELL — ROOT@NEXUS-CORE</div>
+            <div class="terminal-body">
+                <div class="line"><span class="prompt">root@nexus:~#</span><span class="cmd"> ./connect --chain 7-hop
+                        --anon</span></div>
+                <div class="line"><span class="out dim">[0.001s] Initializing Tor circuit...</span></div>
+                <div class="line"><span class="out dim">[0.043s] Guard node: 193.xx.241.07 ✓</span></div>
+                <div class="line"><span class="out dim">[0.089s] Middle relay: 45.xx.67.111 ✓</span></div>
+                <div class="line"><span class="out dim">[0.112s] Exit node: 77.xx.41.200 ✓</span></div>
+                <div class="line"><span class="success">[0.201s] CIRCUIT ESTABLISHED — IDENTITY MASKED</span></div>
+                <div class="line">&nbsp;</div>
+                <div class="line"><span class="prompt">root@nexus:~#</span><span class="cmd"> ./scan --target 0x7f4a
+                        --deep</span></div>
+                <div class="line"><span class="out">Scanning 65,536 ports on target...</span></div>
+                <div class="line"><span class="data"> PORT 22 → SSH [OPEN] OpenSSH 8.2</span></div>
+                <div class="line"><span class="data"> PORT 443 → HTTPS [OPEN] nginx/1.18</span></div>
+                <div class="line"><span class="data"> PORT 8080 → HTTP-ALT [OPEN] Apache</span></div>
+                <div class="line"><span class="warn"> PORT 3306 → MYSQL [EXPOSED] — auth bypass possible</span></div>
+                <div class="line"><span class="data"> PORT 6881 → BITTORRENT [OPEN]</span></div>
+                <div class="line">&nbsp;</div>
+                <div class="line"><span class="prompt">root@nexus:~#</span><span class="cmd"> ./exploit --vuln
+                        CVE-2024-4117 --silent</span></div>
+                <div class="line"><span class="out dim">[...] Loading payload modules</span></div>
+                <div class="line"><span class="out dim">[...] Bypassing firewall rules</span></div>
+                <div class="line"><span class="out dim">[...] Injecting shellcode</span></div>
+                <div class="line"><span class="success">[!!!] ROOT ACCESS GRANTED — SESSION HIJACKED</span></div>
+                <div class="line">&nbsp;</div>
+                <div class="line"><span class="prompt">root@nexus:~#</span><span class="cmd"> ./dump --db all --encrypt
+                        AES256 --out /vault</span></div>
+                <div class="line"><span class="data"> Dumping: users_table → 2,841,003 records ████████████ 100%</span>
+                </div>
+                <div class="line"><span class="data"> Dumping: financial_records → 94,200 records ████████████
+                        100%</span></div>
+                <div class="line"><span class="data"> Dumping: private_keys → 1,204 records ████████████ 100%</span>
+                </div>
+                <div class="line"><span class="success"> TOTAL: 4.7 GB encrypted → /vault/0x7f4a.aes256</span></div>
+                <div class="line">&nbsp;</div>
+                <div class="line"><span class="prompt">root@nexus:~#</span><span class="cmd"> <span
+                            class="cursor"></span></span></div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="panel right-panel">
+            <div class="panel-title">// LIVE ACTIVITY</div>
+
+            <div class="activity-item alert">
+                <div class="ts">00:12:47</div>
+                <div class="msg">🔴 IDS ALERT — unknown probe on eth0</div>
+            </div>
+            <div class="activity-item">
+                <div class="ts">00:11:33</div>
+                <div class="msg">✓ New identity rotated (TOR)</div>
+            </div>
+            <div class="activity-item warn">
+                <div class="ts">00:10:01</div>
+                <div class="msg">⚠ Honeypot detected — evaded</div>
+            </div>
+            <div class="activity-item">
+                <div class="ts">00:09:55</div>
+                <div class="msg">✓ Payload uploaded to C2</div>
+            </div>
+            <div class="activity-item">
+                <div class="ts">00:08:41</div>
+                <div class="msg">✓ XMR tx confirmed (#4a9f…)</div>
+            </div>
+            <div class="activity-item alert">
+                <div class="ts">00:07:12</div>
+                <div class="msg">🔴 Brute force attempt — blocked</div>
+            </div>
+            <div class="activity-item">
+                <div class="ts">00:06:30</div>
+                <div class="msg">✓ Vault sync complete (4.7 GB)</div>
+            </div>
+
+            <div class="panel-title" style="margin-top:6px;">// SYSTEM LOAD</div>
+
+            <div class="progress-wrap">
+                <div class="progress-label"><span>CPU</span><span id="cpu-val">78%</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="cpu-bar" style="width:78%;"></div>
+                </div>
+            </div>
+            <div class="progress-wrap" style="margin-top:6px;">
+                <div class="progress-label"><span>RAM</span><span>12.4 / 16 GB</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width:77%;"></div>
+                </div>
+            </div>
+            <div class="progress-wrap" style="margin-top:6px;">
+                <div class="progress-label"><span>NET TX</span><span>4.2 MB/s</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width:62%; animation-delay:-2s;"></div>
+                </div>
+            </div>
+
+            <div class="panel-title" style="margin-top:8px;">// GEOLOCATION SPOOF</div>
+            <div style="font-size:10.5px; line-height:1.8; color:#00cc33;">
+                REAL IP:&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff0040;">HIDDEN</span><br>
+                FAKE IP:&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#00ff41;">45.79.194.128</span><br>
+                COUNTRY:&nbsp;&nbsp;<span style="color:#00ff41;">🇮🇸 Iceland</span><br>
+                ISP:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#00ff41;">Reykjavik VPS LLC</span><br>
+                LATENCY:&nbsp;&nbsp;<span style="color:#00ff41;">14 ms</span>
+            </div>
+        </div>
+
+        <!-- BOTTOM BAR -->
+        <div class="bottombar">
+            <span>ENC: AES-256-GCM</span>
+            <div class="ticker">
+                <span>BTC <b>$98,241 ▲</b></span>
+                <span>ETH <b>$3,881 ▼</b></span>
+                <span>XMR <b>$174.50 ▲</b></span>
+                <span>SESSIONS: <b>2,847</b></span>
+                <span>PACKETS/S: <b>14,203</b></span>
+                <span>UPTIME: <b>47d 12h 04m</b></span>
+                <span>ZERO-DAYS: <b>3 LOADED</b></span>
+            </div>
+            <span>SESSION: 0x4AFB2C || v4.2.1-RELEASE</span>
+        </div>
+
+    </div>
+
+    <script>
+        // === MATRIX RAIN ===
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01アβΩ∑∆∏√∞≈≡≠≤≥ABCDEFXYZ0123456789!@#$%^&*<>?/\\|{}[]'.split('');
+        const cols = Math.floor(canvas.width / 14);
+        const drops = Array(cols).fill(1);
+
+        function matrixDraw() {
+            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff41';
+            ctx.font = '13px monospace';
+            drops.forEach((y, i) => {
+                const ch = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(ch, i * 14, y * 14);
+                if (y * 14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(matrixDraw, 40);
+
+        // === LIVE CLOCK ===
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // === JITTER CPU ===
+        setInterval(() => {
+            const v = 70 + Math.floor(Math.random() * 20);
+            document.getElementById('cpu-val').textContent = v + '%';
+            document.getElementById('cpu-bar').style.width = v + '%';
+        }, 2000);
+    </script>
+</body>
+
+</html>
