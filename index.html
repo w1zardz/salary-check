@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALARY.EXE — Калькулятор уровня жизни</title>
+<meta name="description" content="Узнай реальный уровень жизни по зарплате в разных городах мира. Москва, Воронеж, Лиски, Дубай, Таиланд и другие.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#0a0e14;
+  --panel:#0d1117;
+  --border:#1e2a3a;
+  --green:#00ff41;
+  --green-dim:#0a6e23;
+  --orange:#ff9500;
+  --red:#ff3b30;
+  --yellow:#ffd60a;
+  --blue:#0a84ff;
+  --cyan:#64d2ff;
+  --text:#c9d1d9;
+  --muted:#6e7681;
+  --white:#f0f6fc;
+}
+
+body{
+  font-family:'JetBrains Mono',monospace;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+.container{
+  max-width:800px;
+  margin:0 auto;
+  padding:12px;
+}
+
+/* Terminal window */
+.terminal{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 0 60px rgba(0,255,65,0.05);
+}
+
+.terminal-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 16px;
+  background:#161b22;
+  border-bottom:1px solid var(--border);
+}
+
+.dots{display:flex;gap:8px}
+.dots span{width:12px;height:12px;border-radius:50%}
+.dots span:nth-child(1){background:#ff5f57}
+.dots span:nth-child(2){background:#febc2e}
+.dots span:nth-child(3){background:#28c840}
+
+.terminal-title{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.terminal-body{
+  padding:20px 16px;
+}
+
+/* Logo */
+.logo{
+  color:var(--green);
+  font-size:clamp(28px,8vw,56px);
+  font-weight:700;
+  letter-spacing:4px;
+  text-shadow:0 0 20px rgba(0,255,65,0.3);
+  margin-bottom:4px;
+  line-height:1.1;
+}
+
+.version{
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:20px;
+}
+
+.divider{
+  border:none;
+  border-top:1px solid var(--border);
+  margin:20px 0;
+}
+
+/* Command prompt */
+.cmd{
+  color:var(--green);
+  font-size:clamp(13px,3.5vw,16px);
+  margin-bottom:12px;
+}
+.cmd::before{content:'❯ ';color:var(--muted)}
+
+/* City selector */
+.cities{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.city-group-label{
+  width:100%;
+  font-size:11px;
+  color:var(--muted);
+  margin-top:8px;
+  margin-bottom:2px;
+}
+.city-group-label:first-child{margin-top:0}
+
+.city-btn{
+  font-family:inherit;
+  font-size:clamp(12px,3vw,14px);
+  padding:6px 14px;
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+  cursor:pointer;
+  border-radius:4px;
+  transition:all .15s;
+  white-space:nowrap;
+}
+
+.city-btn:hover{
+  border-color:var(--green);
+  color:var(--green);
+}
+
+.city-btn.active{
+  background:var(--green);
+  color:var(--bg);
+  border-color:var(--green);
+  font-weight:700;
+}
+
+/* Tiers */
+.tiers-header{
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:4px;
+  line-height:1.6;
+}
+
+.tier{
+  border-left:3px solid;
+  padding:12px 16px;
+  margin:10px 0;
+  background:rgba(255,255,255,0.02);
+  border-radius:0 6px 6px 0;
+  transition:all .2s;
+}
+
+.tier:hover{
+  background:rgba(255,255,255,0.04);
+}
+
+.tier-range{
+  font-weight:700;
+  font-size:clamp(13px,3.5vw,15px);
+  margin-bottom:4px;
+}
+
+.tier-desc{
+  font-size:clamp(12px,3vw,13px);
+  color:var(--muted);
+  line-height:1.5;
+}
+
+.tier-1{border-color:var(--red)}
+.tier-1 .tier-range{color:var(--red)}
+
+.tier-2{border-color:var(--orange)}
+.tier-2 .tier-range{color:var(--orange)}
+
+.tier-3{border-color:var(--yellow)}
+.tier-3 .tier-range{color:var(--yellow)}
+
+.tier-4{border-color:var(--green)}
+.tier-4 .tier-range{color:var(--green)}
+
+.tier-5{border-color:var(--cyan)}
+.tier-5 .tier-range{color:var(--cyan)}
+
+/* Checker */
+.checker{margin-top:8px}
+
+.input-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.input-label{
+  color:var(--green);
+  font-size:clamp(13px,3.5vw,15px);
+  white-space:nowrap;
+}
+
+.salary-input{
+  font-family:inherit;
+  font-size:clamp(16px,4vw,18px);
+  background:transparent;
+  border:none;
+  border-bottom:2px solid var(--green-dim);
+  color:var(--green);
+  padding:4px 0;
+  width:180px;
+  max-width:100%;
+  outline:none;
+  transition:border-color .2s;
+}
+
+.salary-input:focus{
+  border-bottom-color:var(--green);
+}
+
+.salary-input::placeholder{
+  color:var(--green-dim);
+}
+
+.result{
+  font-size:clamp(13px,3.5vw,15px);
+  padding:12px 16px;
+  background:rgba(255,255,255,0.02);
+  border-radius:6px;
+  border-left:3px solid var(--muted);
+  min-height:44px;
+  transition:all .3s;
+  line-height:1.5;
+}
+
+.result.has-result{
+  animation:fadeIn .3s;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.result-emoji{margin-right:6px}
+
+/* Footer */
+.footer{
+  text-align:center;
+  padding:16px;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.cursor{
+  display:inline-block;
+  width:8px;
+  height:16px;
+  background:var(--green);
+  animation:blink 1s step-end infinite;
+  vertical-align:text-bottom;
+  margin-left:2px;
+}
+
+@keyframes blink{
+  0%,100%{opacity:1}
+  50%{opacity:0}
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+@media(max-width:480px){
+  .container{padding:8px}
+  .terminal-body{padding:14px 12px}
+  .city-btn{padding:5px 10px;font-size:12px}
+  .tier{padding:10px 12px;margin:8px 0}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="terminal">
+
+<div class="terminal-bar">
+  <div class="dots"><span></span><span></span><span></span></div>
+  <div class="terminal-title">salary.exe v2.0</div>
+</div>
+
+<div class="terminal-body">
+
+<div class="logo">SALARY</div>
+<div class="version">v2.0 — правдивая версия // 2026</div>
+
+<hr class="divider">
+
+<div class="cmd">select --location</div>
+
+<div class="cities">
+  <div class="city-group-label">// Россия</div>
+  <button class="city-btn active" data-city="msk">МСК</button>
+  <button class="city-btn" data-city="spb">СПБ</button>
+  <button class="city-btn" data-city="vrn">ВРН</button>
+  <button class="city-btn" data-city="lsk">ЛИСКИ</button>
+
+  <div class="city-group-label">// Европа</div>
+  <button class="city-btn" data-city="ber">BER</button>
+  <button class="city-btn" data-city="par">PAR</button>
+  <button class="city-btn" data-city="ldn">LDN</button>
+  <button class="city-btn" data-city="beg">BEG</button>
+  <button class="city-btn" data-city="tbs">TBS</button>
+
+  <div class="city-group-label">// Америка</div>
+  <button class="city-btn" data-city="nyc">NYC</button>
+  <button class="city-btn" data-city="sfbay">SF/BAY</button>
+
+  <div class="city-group-label">// Азия и Ближний Восток</div>
+  <button class="city-btn" data-city="dxb">ДУБАЙ</button>
+  <button class="city-btn" data-city="tha">ТАИЛАНД</button>
+  <button class="city-btn" data-city="chn">КИТАЙ</button>
+  <button class="city-btn" data-city="bali">БАЛИ</button>
+</div>
+
+<hr class="divider">
+
+<div class="cmd">cat /etc/salary/<span id="config-file">msk</span>_tiers.conf</div>
+
+<div class="tiers-header">
+  <div>// <span id="city-name">Москва</span> | <span id="currency-label">₽/мес</span></div>
+</div>
+
+<div id="tiers-container"></div>
+
+<hr class="divider">
+
+<div class="cmd">check --salary</div>
+
+<div class="checker">
+  <div class="input-row">
+    <span class="input-label">❯ введи зп (<span id="currency-input">₽/мес</span>):</span>
+    <input type="text" class="salary-input" id="salary-input" placeholder="0" inputmode="numeric" autocomplete="off">
+  </div>
+  <div class="result" id="result"></div>
+</div>
+
+<div class="footer">
+  salary.exe v2.0 — жизненная правда<span class="cursor"></span>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+const DATA = {
+  msk: {
+    name: 'Москва', currency: '₽/мес', symbol: '₽',
+    tiers: [
+      { max: 80000, color: 1, label: 'x < 80 000 ₽', emoji: '💀', desc: 'Выживание. Комната на окраине, дошик, метро. На себя ничего не остаётся.' },
+      { max: 150000, color: 2, label: '80 000 < x < 150 000 ₽', emoji: '😐', desc: 'Скромно. Однушка за МКАД, готовишь дома, б/у авто если повезёт. Копить не получается.' },
+      { max: 300000, color: 3, label: '150 000 < x < 300 000 ₽', emoji: '🙂', desc: 'Нормально. Хорошая съёмная квартира, кафе по выходным, отпуск раз в год, можно откладывать.' },
+      { max: 500000, color: 4, label: '300 000 < x < 500 000 ₽', emoji: '😊', desc: 'Комфортно. Ипотека без боли, новое авто, рестораны, отпуск 2-3 раза в год, накопления растут.' },
+      { max: Infinity, color: 5, label: 'x > 500 000 ₽', emoji: '🏆', desc: 'Отлично. Квартира в хорошем районе, премиум авто, свобода выбора, инвестиции.' }
+    ]
+  },
+  spb: {
+    name: 'Санкт-Петербург', currency: '₽/мес', symbol: '₽',
+    tiers: [
+      { max: 60000, color: 1, label: 'x < 60 000 ₽', emoji: '💀', desc: 'Выживание. Комната, транспорт, Пятёрочка. Петербург красивый, но не для тебя.' },
+      { max: 120000, color: 2, label: '60 000 < x < 120 000 ₽', emoji: '😐', desc: 'Скромно. Однушка в спальнике, базовые потребности закрыты, но без излишеств.' },
+      { max: 250000, color: 3, label: '120 000 < x < 250 000 ₽', emoji: '🙂', desc: 'Нормально. Хорошая квартира ближе к центру, кафе, поездки по России, откладываешь.' },
+      { max: 400000, color: 4, label: '250 000 < x < 400 000 ₽', emoji: '😊', desc: 'Хорошо. Ипотека, авто, рестораны, заграница. Питер раскрывается по полной.' },
+      { max: Infinity, color: 5, label: 'x > 400 000 ₽', emoji: '🏆', desc: 'Роскошно. Квартира на Петроградке, путешествия, полная финансовая свобода.' }
+    ]
+  },
+  vrn: {
+    name: 'Воронеж', currency: '₽/мес', symbol: '₽',
+    tiers: [
+      { max: 25000, color: 1, label: 'x < 25 000 ₽', emoji: '💀', desc: 'Выживание. Хватает только на еду и коммуналку. Никаких развлечений.' },
+      { max: 45000, color: 2, label: '25 000 < x < 45 000 ₽', emoji: '😐', desc: 'Скромно. Съём однушки, базовая еда, иногда кино. Средняя зп по городу.' },
+      { max: 80000, color: 3, label: '45 000 < x < 80 000 ₽', emoji: '🙂', desc: 'Нормально. Хорошая квартира, авто, кафе, можно откладывать. Выше среднего.' },
+      { max: 150000, color: 4, label: '80 000 < x < 150 000 ₽', emoji: '😊', desc: 'Отлично для Воронежа. Ипотека, новое авто, отпуск 2 раза в год, серьёзные накопления.' },
+      { max: Infinity, color: 5, label: 'x > 150 000 ₽', emoji: '🏆', desc: 'Топ. Можно жить как в Москве на 400к. Свой дом, два авто, полная свобода.' }
+    ]
+  },
+  lsk: {
+    name: 'Лиски, Воронежская обл.', currency: '₽/мес', symbol: '₽',
+    tiers: [
+      { max: 18000, color: 1, label: 'x < 18 000 ₽', emoji: '💀', desc: 'Выживание. Зарплата продавца или разнорабочего. Хватает впритык на базовые нужды.' },
+      { max: 30000, color: 2, label: '18 000 < x < 30 000 ₽', emoji: '😐', desc: 'Скромно. Средняя зп по городу. Квартира своя или дешёвый съём, на жизнь хватает.' },
+      { max: 50000, color: 3, label: '30 000 < x < 50 000 ₽', emoji: '🙂', desc: 'Хорошо. Выше среднего по городу. Авто, ремонт, можно откладывать на отпуск.' },
+      { max: 80000, color: 4, label: '50 000 < x < 80 000 ₽', emoji: '😊', desc: 'Очень хорошо. Один из самых обеспеченных в городе. Новое авто, поездки, накопления.' },
+      { max: Infinity, color: 5, label: 'x > 80 000 ₽', emoji: '🏆', desc: 'Король Лисок. Скорее всего удалёнка на Москву. Можно купить полгорода.' }
+    ]
+  },
+  ber: {
+    name: 'Берлин', currency: '€/мес (нетто)', symbol: '€',
+    tiers: [
+      { max: 1500, color: 1, label: 'x < 1 500 €', emoji: '💀', desc: 'Выживание. WG-комната, дёнер, BVG-проездной. Берлин бедный, но ты ещё беднее.' },
+      { max: 2500, color: 2, label: '1 500 < x < 2 500 €', emoji: '😐', desc: 'Скромно. Маленькая квартира, бюджетная еда, бесплатные развлечения. Типичный берлинец.' },
+      { max: 4000, color: 3, label: '2 500 < x < 4 000 €', emoji: '🙂', desc: 'Нормально. Хорошая квартира, рестораны, путешествия по Европе, пенсионные накопления.' },
+      { max: 6000, color: 4, label: '4 000 < x < 6 000 €', emoji: '😊', desc: 'Хорошо. Большая квартира, авто (если надо), любые хобби, серьёзные инвестиции.' },
+      { max: Infinity, color: 5, label: 'x > 6 000 €', emoji: '🏆', desc: 'Богач по берлинским меркам. Купить квартиру реально, хоть налоги и съедают.' }
+    ]
+  },
+  par: {
+    name: 'Париж', currency: '€/мес (нетто)', symbol: '€',
+    tiers: [
+      { max: 1800, color: 1, label: 'x < 1 800 €', emoji: '💀', desc: 'Выживание. Chambre de bonne 9м², багет и макароны. Париж видишь только из окна метро.' },
+      { max: 3000, color: 2, label: '1 800 < x < 3 000 €', emoji: '😐', desc: 'Скромно. Студия в пригороде, осторожный бюджет. Париж дорогой даже для парижан.' },
+      { max: 5000, color: 3, label: '3 000 < x < 5 000 €', emoji: '🙂', desc: 'Нормально. Квартира в городе, кафе, вино, поездки. Жизнь как в фильмах (почти).' },
+      { max: 8000, color: 4, label: '5 000 < x < 8 000 €', emoji: '😊', desc: 'Хорошо. Большая квартира, гастрономия, театры, отпуск на Лазурном берегу.' },
+      { max: Infinity, color: 5, label: 'x > 8 000 €', emoji: '🏆', desc: 'Роскошь. Квартира в центре — реальность. Инвестиции в недвижимость, мишленовские рестораны.' }
+    ]
+  },
+  ldn: {
+    name: 'Лондон', currency: '£/мес (нетто)', symbol: '£',
+    tiers: [
+      { max: 2000, color: 1, label: 'x < 2 000 £', emoji: '💀', desc: 'Выживание. Комната в зоне 4+, Tesco Value, автобус. Лондон тебя не замечает.' },
+      { max: 3500, color: 2, label: '2 000 < x < 3 500 £', emoji: '😐', desc: 'Скромно. Маленькая квартира, паб по пятницам, Primark. Типичный лондонец, если честно.' },
+      { max: 5500, color: 3, label: '3 500 < x < 5 500 £', emoji: '🙂', desc: 'Нормально. Хорошая квартира в зоне 2-3, рестораны, выходные в Европе.' },
+      { max: 8000, color: 4, label: '5 500 < x < 8 000 £', emoji: '😊', desc: 'Хорошо. Просторная квартира, театры, хобби, серьёзные накопления, отпуск куда хочешь.' },
+      { max: Infinity, color: 5, label: 'x > 8 000 £', emoji: '🏆', desc: 'Элита. Своя квартира в Лондоне — это серьёзно. Полная свобода и комфорт.' }
+    ]
+  },
+  beg: {
+    name: 'Белград', currency: '€/мес (нетто)', symbol: '€',
+    tiers: [
+      { max: 600, color: 1, label: 'x < 600 €', emoji: '💀', desc: 'Выживание. Средняя сербская зп. Скромная еда, общественный транспорт, без накоплений.' },
+      { max: 1200, color: 2, label: '600 < x < 1 200 €', emoji: '😐', desc: 'Неплохо. Квартира, нормальная еда, кафаны, базовый комфорт. Лучше среднего серба.' },
+      { max: 2500, color: 3, label: '1 200 < x < 2 500 €', emoji: '🙂', desc: 'Хорошо. Как айтишник в Белграде. Хорошая квартира, авто, рестораны, поездки.' },
+      { max: 4000, color: 4, label: '2 500 < x < 4 000 €', emoji: '😊', desc: 'Отлично. Топ-зп для Белграда. Можно купить квартиру, ни в чём себе не отказываешь.' },
+      { max: Infinity, color: 5, label: 'x > 4 000 €', emoji: '🏆', desc: 'Роскошно. Живёшь как король. Белград очень дешёвый, и ты это чувствуешь.' }
+    ]
+  },
+  tbs: {
+    name: 'Тбилиси', currency: '$/мес', symbol: '$',
+    tiers: [
+      { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', desc: 'Выживание. Средняя грузинская зп. Хватает на базу, хинкали и маршрутку.' },
+      { max: 1200, color: 2, label: '500 < x < 1 200 $', emoji: '😐', desc: 'Нормально. Хорошая квартира, нормальная еда, можно жить достойно.' },
+      { max: 2500, color: 3, label: '1 200 < x < 2 500 $', emoji: '🙂', desc: 'Хорошо. Жизнь релоканта. Квартира в центре, рестораны, поездки по Грузии.' },
+      { max: 4000, color: 4, label: '2 500 < x < 4 000 $', emoji: '😊', desc: 'Отлично. Дорогой ресторан каждый день, авто, путешествия, накопления.' },
+      { max: Infinity, color: 5, label: 'x > 4 000 $', emoji: '🏆', desc: 'Богач. Можно купить квартиру за пару лет, жить как местный олигарх.' }
+    ]
+  },
+  nyc: {
+    name: 'Нью-Йорк', currency: '$/мес (после налогов)', symbol: '$',
+    tiers: [
+      { max: 3000, color: 1, label: 'x < 3 000 $', emoji: '💀', desc: 'Выживание. Комната в Бруклине с 3 соседями, dollar pizza, subway. NYC тебя жуёт.' },
+      { max: 5500, color: 2, label: '3 000 < x < 5 500 $', emoji: '😐', desc: 'Скромно. Студия далеко от Манхэттена, бюджетные бары, Central Park бесплатный.' },
+      { max: 9000, color: 3, label: '5 500 < x < 9 000 $', emoji: '🙂', desc: 'Нормально. Однушка в хорошем районе, рестораны, бродвей, выходные upstate.' },
+      { max: 15000, color: 4, label: '9 000 < x < 15 000 $', emoji: '😊', desc: 'Хорошо. Хорошая квартира на Манхэттене, такси, лучшие рестораны, серьёзные накопления.' },
+      { max: Infinity, color: 5, label: 'x > 15 000 $', emoji: '🏆', desc: 'Элита. Можно купить квартиру (лол, NYC). Полная свобода в самом дорогом городе.' }
+    ]
+  },
+  sfbay: {
+    name: 'SF / Bay Area', currency: '$/мес (после налогов)', symbol: '$',
+    tiers: [
+      { max: 4000, color: 1, label: 'x < 4 000 $', emoji: '💀', desc: 'Выживание. Комната, лапша, автобус. Кремниевая долина, но ты не в ней.' },
+      { max: 7000, color: 2, label: '4 000 < x < 7 000 $', emoji: '😐', desc: 'Скромно. Студия на окраине, подержанная Тесла (шутка), базовый комфорт.' },
+      { max: 12000, color: 3, label: '7 000 < x < 12 000 $', emoji: '🙂', desc: 'Нормально. Квартира, авто, рестораны. Типичный софтварный инженер.' },
+      { max: 20000, color: 4, label: '12 000 < x < 20 000 $', emoji: '😊', desc: 'Хорошо. Дом в пригороде, 2 машины, FAANG-уровень, 401k на максимум.' },
+      { max: Infinity, color: 5, label: 'x > 20 000 $', emoji: '🏆', desc: 'Топ. Дом в Пало-Альто, стартап-инвестиции, early retirement реален.' }
+    ]
+  },
+  dxb: {
+    name: 'Дубай', currency: '$/мес (без налогов!)', symbol: '$',
+    tiers: [
+      { max: 2000, color: 1, label: 'x < 2 000 $', emoji: '💀', desc: 'Выживание. Комната с рабочими, жара, экономия на всём. Дубай гламурный не для тебя.' },
+      { max: 4000, color: 2, label: '2 000 < x < 4 000 $', emoji: '😐', desc: 'Скромно. Студия в Дейре, бюджетная еда, метро. Живёшь, но Дубай проходит мимо.' },
+      { max: 8000, color: 3, label: '4 000 < x < 8 000 $', emoji: '🙂', desc: 'Нормально. Квартира в Марине, авто, бранчи, пляж. Жизнь хороша, но дорога.' },
+      { max: 15000, color: 4, label: '8 000 < x < 15 000 $', emoji: '😊', desc: 'Хорошо. Большая квартира, джип, рестораны, путешествия. Дубай как задуман.' },
+      { max: Infinity, color: 5, label: 'x > 15 000 $', emoji: '🏆', desc: 'Роскошь. Вилла, люксовое авто, яхт-клуб. И всё это без налогов.' }
+    ]
+  },
+  tha: {
+    name: 'Таиланд', currency: '$/мес', symbol: '$',
+    tiers: [
+      { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', desc: 'Как тайцы. Комната, уличная еда, мотобайк. Тепло, но на этом плюсы кончаются.' },
+      { max: 1000, color: 2, label: '500 < x < 1 000 $', emoji: '😐', desc: 'Скромно. Студия с кондеем, кафе, базовая жизнь. Уже лучше среднего тайца.' },
+      { max: 2000, color: 3, label: '1 000 < x < 2 000 $', emoji: '🙂', desc: 'Хорошо. Квартира с бассейном, рестораны, массаж, острова по выходным. Типичный номад.' },
+      { max: 4000, color: 4, label: '2 000 < x < 4 000 $', emoji: '😊', desc: 'Отлично. Кондо на берегу, скутер и авто, лучшие рестораны, любые острова.' },
+      { max: Infinity, color: 5, label: 'x > 4 000 $', emoji: '🏆', desc: 'Роскошь. Вилла, частные пляжи, перелёты бизнес-классом по ЮВА. Рай.' }
+    ]
+  },
+  chn: {
+    name: 'Китай (Шанхай/Пекин)', currency: '$/мес (после налогов)', symbol: '$',
+    tiers: [
+      { max: 800, color: 1, label: 'x < 800 $', emoji: '💀', desc: 'Выживание. Как средний китаец. Маленькая комната, уличная еда, метро.' },
+      { max: 1500, color: 2, label: '800 < x < 1 500 $', emoji: '😐', desc: 'Скромно. Квартира на окраине, нормальная еда, базовые развлечения.' },
+      { max: 3000, color: 3, label: '1 500 < x < 3 000 $', emoji: '🙂', desc: 'Нормально. Хорошая квартира, рестораны, Taobao без ограничений, путешествия по Китаю.' },
+      { max: 6000, color: 4, label: '3 000 < x < 6 000 $', emoji: '😊', desc: 'Хорошо. Большая квартира в центре, экспат-жизнь, путешествия по Азии.' },
+      { max: Infinity, color: 5, label: 'x > 6 000 $', emoji: '🏆', desc: 'Элита. Квартира в Пудуне, водитель, лучшие рестораны. VPN и свобода — отдельная тема.' }
+    ]
+  },
+  bali: {
+    name: 'Бали', currency: '$/мес', symbol: '$',
+    tiers: [
+      { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', desc: 'Как балийцы. Маленькая комната, варунг, мотобайк. Тепло, но это всё.' },
+      { max: 1000, color: 2, label: '500 < x < 1 000 $', emoji: '😐', desc: 'Скромно. Скромная вилла, коворкинг, кафе. Бали на минималках, но уже приятно.' },
+      { max: 2000, color: 3, label: '1 000 < x < 2 000 $', emoji: '🙂', desc: 'Нормально. Вилла с бассейном, серфинг, рестораны, закаты в La Brisa. Номад-лайф.' },
+      { max: 3500, color: 4, label: '2 000 < x < 3 500 $', emoji: '😊', desc: 'Хорошо. Большая вилла, scooter + авто, лучшие beach-клубы, дайвинг, йога-ретриты.' },
+      { max: Infinity, color: 5, label: 'x > 3 500 $', emoji: '🏆', desc: 'Роскошь. Вилла мечты, частный повар, Gili-острова на спидботе. Paradise unlocked.' }
+    ]
+  }
+};
+
+let currentCity = 'msk';
+
+function formatNumber(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+function renderTiers(cityKey) {
+  const city = DATA[cityKey];
+  const container = document.getElementById('tiers-container');
+  document.getElementById('config-file', cityKey);
+  document.getElementById('config-file').textContent = cityKey;
+  document.getElementById('city-name').textContent = city.name;
+  document.getElementById('currency-label').textContent = city.currency;
+  document.getElementById('currency-input').textContent = city.currency;
+
+  container.innerHTML = city.tiers.map(t => `
+    <div class="tier tier-${t.color}">
+      <div class="tier-range">${t.label}</div>
+      <div class="tier-desc">${t.desc}</div>
+    </div>
+  `).join('');
+}
+
+function checkSalary(val, cityKey) {
+  const city = DATA[cityKey];
+  const result = document.getElementById('result');
+
+  if (!val || val <= 0) {
+    result.innerHTML = '';
+    result.className = 'result';
+    result.style.borderLeftColor = 'var(--muted)';
+    return;
+  }
+
+  const tier = city.tiers.find(t => val < t.max) || city.tiers[city.tiers.length - 1];
+  const colors = ['','var(--red)','var(--orange)','var(--yellow)','var(--green)','var(--cyan)'];
+
+  result.innerHTML = `<span class="result-emoji">${tier.emoji}</span> ${formatNumber(val)} ${city.symbol}/мес — ${tier.desc.split('.')[0].toLowerCase()}`;
+  result.className = 'result has-result';
+  result.style.borderLeftColor = colors[tier.color];
+}
+
+// City buttons
+document.querySelectorAll('.city-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.city-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCity = btn.dataset.city;
+    renderTiers(currentCity);
+    const input = document.getElementById('salary-input');
+    input.value = '';
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('result').style.borderLeftColor = 'var(--muted)';
+    input.placeholder = '0';
+  });
+});
+
+// Salary input
+const salaryInput = document.getElementById('salary-input');
+salaryInput.addEventListener('input', () => {
+  let raw = salaryInput.value.replace(/[^\d]/g, '');
+  if (raw) {
+    salaryInput.value = formatNumber(parseInt(raw));
+    checkSalary(parseInt(raw), currentCity);
+  } else {
+    salaryInput.value = '';
+    checkSalary(0, currentCity);
+  }
+});
+
+// Init
+renderTiers('msk');
+</script>
+
+</body>
+</html>
