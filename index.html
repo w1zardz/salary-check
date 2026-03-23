@@ -1,548 +1,548 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SALARY.EXE — Калькулятор уровня жизни</title>
-<meta name="description" content="Узнай реальный уровень жизни по зарплате в разных городах мира. Москва, Воронеж, Лиски, Дубай, Таиланд и другие.">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SALARY.EXE — Калькулятор уровня жизни</title>
+  <meta name="description" content="Узнай реальный уровень жизни по зарплате в разных городах мира. Москва, Воронеж, Лиски, Дубай, Таиланд и другие.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
-*{margin:0;padding:0;box-sizing:border-box}
+    *{margin:0;padding:0;box-sizing:border-box}
 
-:root{
-  --bg:#0a0e14;
-  --panel:#0d1117;
-  --border:#1e2a3a;
-  --green:#00ff41;
-  --green-dim:#0a6e23;
-  --orange:#ff9500;
-  --red:#ff3b30;
-  --yellow:#ffd60a;
-  --blue:#0a84ff;
-  --cyan:#64d2ff;
-  --text:#c9d1d9;
-  --muted:#6e7681;
-  --white:#f0f6fc;
-}
+    :root{
+      --bg:#0a0e14;
+      --panel:#0d1117;
+      --border:#1e2a3a;
+      --green:#00ff41;
+      --green-dim:#0a6e23;
+      --orange:#ff9500;
+      --red:#ff3b30;
+      --yellow:#ffd60a;
+      --blue:#0a84ff;
+      --cyan:#64d2ff;
+      --text:#c9d1d9;
+      --muted:#6e7681;
+      --white:#f0f6fc;
+    }
 
-body{
-  font-family:'JetBrains Mono',monospace;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  overflow-x:hidden;
-}
+    body{
+      font-family:'JetBrains Mono',monospace;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
 
-.container{
-  max-width:800px;
-  margin:0 auto;
-  padding:12px;
-}
+    .container{
+      max-width:800px;
+      margin:0 auto;
+      padding:12px;
+    }
 
-.terminal{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 0 60px rgba(0,255,65,0.05);
-}
+    .terminal{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 0 60px rgba(0,255,65,0.05);
+    }
 
-.terminal-bar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 16px;
-  background:#161b22;
-  border-bottom:1px solid var(--border);
-}
+    .terminal-bar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 16px;
+      background:#161b22;
+      border-bottom:1px solid var(--border);
+    }
 
-.dots{display:flex;gap:8px}
-.dots span{width:12px;height:12px;border-radius:50%}
-.dots span:nth-child(1){background:#ff5f57}
-.dots span:nth-child(2){background:#febc2e}
-.dots span:nth-child(3){background:#28c840}
+    .dots{display:flex;gap:8px}
+    .dots span{width:12px;height:12px;border-radius:50%}
+    .dots span:nth-child(1){background:#ff5f57}
+    .dots span:nth-child(2){background:#febc2e}
+    .dots span:nth-child(3){background:#28c840}
 
-.terminal-title{font-size:12px;color:var(--muted)}
+    .terminal-title{font-size:12px;color:var(--muted)}
 
-.terminal-body{padding:20px 16px}
+    .terminal-body{padding:20px 16px}
 
-.logo{
-  color:var(--green);
-  font-size:clamp(28px,8vw,56px);
-  font-weight:700;
-  letter-spacing:4px;
-  text-shadow:0 0 20px rgba(0,255,65,0.3);
-  margin-bottom:4px;
-  line-height:1.1;
-}
+    .logo{
+      color:var(--green);
+      font-size:clamp(28px,8vw,56px);
+      font-weight:700;
+      letter-spacing:4px;
+      text-shadow:0 0 20px rgba(0,255,65,0.3);
+      margin-bottom:4px;
+      line-height:1.1;
+    }
 
-.version{color:var(--muted);font-size:11px;margin-bottom:20px}
+    .version{color:var(--muted);font-size:11px;margin-bottom:20px}
 
-.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+    .divider{border:none;border-top:1px solid var(--border);margin:20px 0}
 
-.cmd{color:var(--green);font-size:clamp(13px,3.5vw,16px);margin-bottom:12px}
-.cmd::before{content:'❯ ';color:var(--muted)}
+    .cmd{color:var(--green);font-size:clamp(13px,3.5vw,16px);margin-bottom:12px}
+    .cmd::before{content:'❯ ';color:var(--muted)}
 
-.cities{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+    .cities{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 
-.city-group-label{
-  width:100%;font-size:11px;color:var(--muted);margin-top:8px;margin-bottom:2px;
-}
-.city-group-label:first-child{margin-top:0}
+    .city-group-label{
+      width:100%;font-size:11px;color:var(--muted);margin-top:8px;margin-bottom:2px;
+    }
+    .city-group-label:first-child{margin-top:0}
 
-.city-btn{
-  font-family:inherit;font-size:clamp(12px,3vw,14px);padding:6px 14px;
-  background:transparent;border:1px solid var(--border);color:var(--text);
-  cursor:pointer;border-radius:4px;transition:all .15s;white-space:nowrap;
-}
-.city-btn:hover{border-color:var(--green);color:var(--green)}
-.city-btn.active{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:700}
+    .city-btn{
+      font-family:inherit;font-size:clamp(12px,3vw,14px);padding:6px 14px;
+      background:transparent;border:1px solid var(--border);color:var(--text);
+      cursor:pointer;border-radius:4px;transition:all .15s;white-space:nowrap;
+    }
+    .city-btn:hover{border-color:var(--green);color:var(--green)}
+    .city-btn.active{background:var(--green);color:var(--bg);border-color:var(--green);font-weight:700}
 
-.tiers-header{color:var(--muted);font-size:12px;margin-bottom:4px;line-height:1.6}
+    .tiers-header{color:var(--muted);font-size:12px;margin-bottom:4px;line-height:1.6}
 
-.tier{
-  border-left:3px solid;padding:12px 16px;margin:10px 0;
-  background:rgba(255,255,255,0.02);border-radius:0 6px 6px 0;transition:all .2s;
-}
-.tier:hover{background:rgba(255,255,255,0.04)}
+    .tier{
+      border-left:3px solid;padding:12px 16px;margin:10px 0;
+      background:rgba(255,255,255,0.02);border-radius:0 6px 6px 0;transition:all .2s;
+    }
+    .tier:hover{background:rgba(255,255,255,0.04)}
 
-.tier-range{font-weight:700;font-size:clamp(13px,3.5vw,15px);margin-bottom:4px}
+    .tier-range{font-weight:700;font-size:clamp(13px,3.5vw,15px);margin-bottom:4px}
 
-.tier-name{
-  font-size:clamp(13px,3.5vw,15px);font-weight:700;
-  color:var(--white);margin-bottom:6px;text-transform:lowercase;
-}
+    .tier-name{
+      font-size:clamp(13px,3.5vw,15px);font-weight:700;
+      color:var(--white);margin-bottom:6px;text-transform:lowercase;
+    }
 
-.tier-desc{font-size:clamp(12px,3vw,13px);color:var(--muted);line-height:1.6;white-space:pre-line}
+    .tier-desc{font-size:clamp(12px,3vw,13px);color:var(--muted);line-height:1.6;white-space:pre-line}
 
-.tier-1{border-color:var(--red)}
-.tier-1 .tier-range{color:var(--red)}
-.tier-2{border-color:var(--orange)}
-.tier-2 .tier-range{color:var(--orange)}
-.tier-3{border-color:var(--yellow)}
-.tier-3 .tier-range{color:var(--yellow)}
-.tier-4{border-color:var(--green)}
-.tier-4 .tier-range{color:var(--green)}
-.tier-5{border-color:var(--cyan)}
-.tier-5 .tier-range{color:var(--cyan)}
-.tier-6{border-color:#bf5af2}
-.tier-6 .tier-range{color:#bf5af2}
+    .tier-1{border-color:var(--red)}
+    .tier-1 .tier-range{color:var(--red)}
+    .tier-2{border-color:var(--orange)}
+    .tier-2 .tier-range{color:var(--orange)}
+    .tier-3{border-color:var(--yellow)}
+    .tier-3 .tier-range{color:var(--yellow)}
+    .tier-4{border-color:var(--green)}
+    .tier-4 .tier-range{color:var(--green)}
+    .tier-5{border-color:var(--cyan)}
+    .tier-5 .tier-range{color:var(--cyan)}
+    .tier-6{border-color:#bf5af2}
+    .tier-6 .tier-range{color:#bf5af2}
 
-.checker{margin-top:8px}
-.input-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.input-label{color:var(--green);font-size:clamp(13px,3.5vw,15px);white-space:nowrap}
+    .checker{margin-top:8px}
+    .input-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .input-label{color:var(--green);font-size:clamp(13px,3.5vw,15px);white-space:nowrap}
 
-.salary-input{
-  font-family:inherit;font-size:clamp(16px,4vw,18px);background:transparent;
-  border:none;border-bottom:2px solid var(--green-dim);color:var(--green);
-  padding:4px 0;width:180px;max-width:100%;outline:none;transition:border-color .2s;
-}
-.salary-input:focus{border-bottom-color:var(--green)}
-.salary-input::placeholder{color:var(--green-dim)}
+    .salary-input{
+      font-family:inherit;font-size:clamp(16px,4vw,18px);background:transparent;
+      border:none;border-bottom:2px solid var(--green-dim);color:var(--green);
+      padding:4px 0;width:180px;max-width:100%;outline:none;transition:border-color .2s;
+    }
+    .salary-input:focus{border-bottom-color:var(--green)}
+    .salary-input::placeholder{color:var(--green-dim)}
 
-.result{
-  font-size:clamp(13px,3.5vw,15px);padding:12px 16px;
-  background:rgba(255,255,255,0.02);border-radius:6px;
-  border-left:3px solid var(--muted);min-height:44px;transition:all .3s;line-height:1.5;
-}
-.result.has-result{animation:fadeIn .3s}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.result-emoji{margin-right:6px}
+    .result{
+      font-size:clamp(13px,3.5vw,15px);padding:12px 16px;
+      background:rgba(255,255,255,0.02);border-radius:6px;
+      border-left:3px solid var(--muted);min-height:44px;transition:all .3s;line-height:1.5;
+    }
+    .result.has-result{animation:fadeIn .3s}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    .result-emoji{margin-right:6px}
 
-.footer{text-align:center;padding:16px;font-size:11px;color:var(--muted)}
-.cursor{
-  display:inline-block;width:8px;height:16px;background:var(--green);
-  animation:blink 1s step-end infinite;vertical-align:text-bottom;margin-left:2px;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    .footer{text-align:center;padding:16px;font-size:11px;color:var(--muted)}
+    .cursor{
+      display:inline-block;width:8px;height:16px;background:var(--green);
+      animation:blink 1s step-end infinite;vertical-align:text-bottom;margin-left:2px;
+    }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-@media(max-width:480px){
-  .container{padding:8px}
-  .terminal-body{padding:14px 12px}
-  .city-btn{padding:5px 10px;font-size:12px}
-  .tier{padding:10px 12px;margin:8px 0}
-}
-</style>
+    @media(max-width:480px){
+      .container{padding:8px}
+      .terminal-body{padding:14px 12px}
+      .city-btn{padding:5px 10px;font-size:12px}
+      .tier{padding:10px 12px;margin:8px 0}
+    }
+  </style>
 </head>
 <body>
 
 <div class="container">
-<div class="terminal">
+  <div class="terminal">
 
-<div class="terminal-bar">
-  <div class="dots"><span></span><span></span><span></span></div>
-  <div class="terminal-title">salary.exe v2.0</div>
-</div>
+    <div class="terminal-bar">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="terminal-title">salary.exe v2.0</div>
+    </div>
 
-<div class="terminal-body">
+    <div class="terminal-body">
 
-<div class="logo">SALARY</div>
-<div class="version">v2.0 — правдивая версия // понторез vs база // 2026</div>
+      <div class="logo">SALARY</div>
+      <div class="version">v2.0 — правдивая версия // понторез vs база // 2026</div>
 
-<hr class="divider">
+      <hr class="divider">
 
-<div class="cmd">select --location</div>
+      <div class="cmd">select --location</div>
 
-<div class="cities">
-  <div class="city-group-label">// Россия</div>
-  <button class="city-btn active" data-city="msk">МСК</button>
-  <button class="city-btn" data-city="spb">СПБ</button>
-  <button class="city-btn" data-city="vrn">ВРН</button>
-  <button class="city-btn" data-city="lsk">ЛИСКИ</button>
+      <div class="cities">
+        <div class="city-group-label">// Россия</div>
+        <button class="city-btn active" data-city="msk">МСК</button>
+        <button class="city-btn" data-city="spb">СПБ</button>
+        <button class="city-btn" data-city="vrn">ВРН</button>
+        <button class="city-btn" data-city="lsk">ЛИСКИ</button>
 
-  <div class="city-group-label">// Европа</div>
-  <button class="city-btn" data-city="ber">BER</button>
-  <button class="city-btn" data-city="par">PAR</button>
-  <button class="city-btn" data-city="ldn">LDN</button>
-  <button class="city-btn" data-city="beg">BEG</button>
-  <button class="city-btn" data-city="tbs">TBS</button>
+        <div class="city-group-label">// Европа</div>
+        <button class="city-btn" data-city="ber">BER</button>
+        <button class="city-btn" data-city="par">PAR</button>
+        <button class="city-btn" data-city="ldn">LDN</button>
+        <button class="city-btn" data-city="beg">BEG</button>
+        <button class="city-btn" data-city="tbs">TBS</button>
 
-  <div class="city-group-label">// Америка</div>
-  <button class="city-btn" data-city="nyc">NYC</button>
-  <button class="city-btn" data-city="sfbay">SF/BAY</button>
+        <div class="city-group-label">// Америка</div>
+        <button class="city-btn" data-city="nyc">NYC</button>
+        <button class="city-btn" data-city="sfbay">SF/BAY</button>
 
-  <div class="city-group-label">// Азия и Ближний Восток</div>
-  <button class="city-btn" data-city="dxb">ДУБАЙ</button>
-  <button class="city-btn" data-city="tha">ТАИЛАНД</button>
-  <button class="city-btn" data-city="chn">КИТАЙ</button>
-  <button class="city-btn" data-city="bali">БАЛИ</button>
-</div>
+        <div class="city-group-label">// Азия и Ближний Восток</div>
+        <button class="city-btn" data-city="dxb">ДУБАЙ</button>
+        <button class="city-btn" data-city="tha">ТАИЛАНД</button>
+        <button class="city-btn" data-city="chn">КИТАЙ</button>
+        <button class="city-btn" data-city="bali">БАЛИ</button>
+      </div>
 
-<hr class="divider">
+      <hr class="divider">
 
-<div class="cmd">cat /etc/salary/<span id="config-file">msk</span>_tiers.conf</div>
+      <div class="cmd">cat /etc/salary/<span id="config-file">msk</span>_tiers.conf</div>
 
-<div class="tiers-header">
-  <div>// <span id="city-name">Москва</span> | <span id="currency-label">₽/мес</span></div>
-</div>
+      <div class="tiers-header">
+        <div>// <span id="city-name">Москва</span> | <span id="currency-label">₽/мес</span></div>
+      </div>
 
-<div id="tiers-container"></div>
+      <div id="tiers-container"></div>
 
-<hr class="divider">
+      <hr class="divider">
 
-<div class="cmd">check --salary</div>
+      <div class="cmd">check --salary</div>
 
-<div class="checker">
-  <div class="input-row">
-    <span class="input-label">❯ введи зп (<span id="currency-input">₽/мес</span>):</span>
-    <input type="text" class="salary-input" id="salary-input" placeholder="0" inputmode="numeric" autocomplete="off">
+      <div class="checker">
+        <div class="input-row">
+          <span class="input-label">❯ введи зп (<span id="currency-input">₽/мес</span>):</span>
+          <input type="text" class="salary-input" id="salary-input" placeholder="0" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="result" id="result"></div>
+      </div>
+
+      <div class="footer">
+        salary.exe v2.0 — жизненная правда<span class="cursor"></span>
+      </div>
+
+    </div>
   </div>
-  <div class="result" id="result"></div>
-</div>
-
-<div class="footer">
-  salary.exe v2.0 — жизненная правда<span class="cursor"></span>
-</div>
-
-</div>
-</div>
 </div>
 
 <script>
-const DATA = {
-  msk: {
-    name: 'Москва', currency: '₽/мес', symbol: '₽',
-    tiers: [
-      { max: 80000, color: 1, label: 'x < 80 000 ₽', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Берёт iPhone 15 Pro Max в микрозайм под 365% годовых, ест доширак, стреляет сигареты у метро, но в ВК цитирует Джейсона Стэйтема про успех и выкладывает фото с чужой BMW.\n🧠 База: Снимает койко-место, ездит на автобусе, закупается в Пятёрочке по красным ценникам. Беден, но без долгов, учится и ищет нормальную работу.' },
-      { max: 150000, color: 2, label: '80 000 ₽ < x < 150 000 ₽', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Взял убитый BMW X5 E53 или гнилой Mercedes W211 в кредит под 30% годовых. Денег на бензин нет — машина стоит во дворе клумбой. Зато «я на премиуме, братан». ОСАГО просрочен.\n🧠 База: Снимает студию за МКАДом, ездит на метро с проездным. Питается скромно, но откладывает 10% на вклад. Изучает сложный процент. Через 3 года будет подушка.' },
-      { max: 300000, color: 3, label: '150 000 ₽ < x < 300 000 ₽', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Взял свежий Geely Monjaro или Changan Uni-K в автокредит на 8 лет. Половина зп на платёж, вторая — на КАСКО и детейлинг. Жрёт макароны, но в пробке на МКАДе чувствует себя боссом.\n🧠 База: Продал кредитный хлам. Купил Lada Granta за наличку или гоняет на каршеринге. Понял, что понты не работают. Копит подушку в 6 зарплат, открыл брокерский счёт.' },
-      { max: 500000, color: 4, label: '300 000 ₽ < x < 500 000 ₽', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Тянет ипотеку на бизнес-класс в Хамовниках, взял BMW 5 G60 или Mercedes E W214 из салона. Живёт от зп до зп, трясётся над каждой царапиной. Одно увольнение — банкротство.\n🧠 База: Познал дзен. Взял надёжный серебристый Hyundai Solaris 2. Не парится из-за притёртостей, ездит в кайф. Ипотека на двушку, инвестирует остаток, капитал растёт, спит спокойно.' },
-      { max: 1000000, color: 5, label: '500 000 ₽ < x < 1 000 000 ₽', emoji: '😊', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Rolex Submariner за 2 мульта, Гелик G63 AMG обновляет каждый год, носит Gucci с огромными логотипами. Девушка тратит больше, чем он зарабатывает.\n🧠 База: Доходы давно позволяют Porsche Cayenne за кэш, но продолжает гонять на серебристом Солярисе. Деньги работают в бизнесе, акциях и недвижимости, а не гниют в железе на парковке.' },
-      { max: Infinity, color: 6, label: 'x > 1 000 000 ₽', emoji: '👑', name: 'достаточно хорошая жизнь+',
-        desc: '🤡 Понторез: Lamborghini Urus, квартира в Сити за 200 мультов в ипотеку, бутылка в Сохо Румс за 500к. Всё напоказ, за фасадом — пустота и кассовый разрыв.\n🧠 База: Серебристый Солярис уже легендарный. Пассивный доход перекрывает расходы в 5 раз. Может купить любую машину в мире за кэш, но зачем? Настоящее богатство — свобода, а не железо.' }
-    ]
-  },
-  spb: {
-    name: 'Санкт-Петербург', currency: '₽/мес', symbol: '₽',
-    tiers: [
-      { max: 60000, color: 1, label: 'x < 60 000 ₽', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: iPhone в рассрочку, подписка на Яндекс.Плюс — единственная роскошь, фотки на фоне Эрмитажа как будто туда ходит. Цитаты Хабиба в сторис.\n🧠 База: Комната в коммуналке, автобус, Пятёрочка. Серое небо бесплатно. Честно ищет работу получше, не залезает в долги. Эрмитаж по четвергам бесплатно.' },
-      { max: 120000, color: 2, label: '60 000 ₽ < x < 120 000 ₽', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Нашёл на Авито убитый Range Rover Evoque 2013 за 900к в кредит. Течёт всё, жрёт 18 литров, но «я же на Рейндже, бро». Парковка на газоне у хрущёвки.\n🧠 База: Однушка в спальнике, проездной на метро, откладывает на вклад. Бар по пятницам — одна пинта крафта и домой. Мокнет под дождём, но не от долгов.' },
-      { max: 250000, color: 3, label: '120 000 ₽ < x < 250 000 ₽', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Chery Tiggo 7 Pro Max в кредит на 7 лет, КАСКО обязательно — страшно поцарапать. Жена хочет на Рубинштейна, бюджет — столовая.\n🧠 База: Серебристый Hyundai Solaris 2 или каршеринг, квартира ближе к центру. Кафе на Рубинштейна иногда, но без фанатизма. Копит на первый взнос, инвестирует остаток.' },
-      { max: 400000, color: 4, label: '250 000 ₽ < x < 400 000 ₽', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: BMW 3 G20 из салона, ипотека на трёшку у Финского залива. Красиво, но платежи 70% дохода. Один больничный — карточный домик.\n🧠 База: Солярис, ипотека на двушку с комфортным платежом. Рестораны, Финляндия на выходные, откладывает. В Питере дешевле Москвы — база это использует.' },
-      { max: Infinity, color: 5, label: 'x > 400 000 ₽', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Mercedes GLE Coupe, квартира на Крестовском, брендовые шмотки. Инста идеальный, банковский счёт — нет.\n🧠 База: Солярис (легенда двора на Петроградке). Квартира за кэш, пассивный доход, инвестиции. Друзья из Москвы завидуют — тот же капитал, но город красивее.' }
-    ]
-  },
-  vrn: {
-    name: 'Воронеж', currency: '₽/мес', symbol: '₽',
-    tiers: [
-      { max: 25000, color: 1, label: 'x < 25 000 ₽', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Кредитный Xiaomi за 40к, кальян по пятницам в долг, репостит «Волка с Уолл-стрит» в ВК. На еду — доширак и хлеб.\n🧠 База: Живёт у родителей, ездит на маршрутке, ест дома. Прогулка по набережной бесплатно. Ищет работу, учится на курсах. Воронеж — миллионник, шансы есть.' },
-      { max: 45000, color: 2, label: '25 000 ₽ < x < 45 000 ₽', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Взял мёртвый Mercedes W210 CDI за 250к в кредит. Масло жрёт литр на 1000 км, но паркуется у ТЦ «Галерея Чижова» и сидит в машине.\n🧠 База: Снимает однушку, ездит на автобусе. Средняя зп по Воронежу — грустно. Но откладывает по 5к/мес, через год подушка. Кино раз в месяц — заслуженно.' },
-      { max: 80000, color: 3, label: '45 000 ₽ < x < 80 000 ₽', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: OMODA C5 в кредит на 7 лет. Полворонежа знает его тачку, вторая половина — его долги. Ресторан раз в месяц, потом две недели макароны.\n🧠 База: Купил б/у Solaris за наличку, квартира нормальная, откладывает на отпуск. По воронежским — почти элита. По московским — лютая нищета. Зато без долгов.' },
-      { max: 150000, color: 4, label: '80 000 ₽ < x < 150 000 ₽', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Kia K5 в топе из салона, ипотека на трёшку в Северном. Соседи думают олигарх, банк думает так же — отдай долги.\n🧠 База: Солярис, ипотека с комфортным платежом, рестораны, отпуск 2 раза в год. Соседи думают айтишник на удалёнке — правильно думают. Инвестирует 30%.' },
-      { max: Infinity, color: 5, label: 'x > 150 000 ₽', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Toyota Camry XV70 в максималке, дом в Отрадном, брендовые шмотки. Все думают бизнесмен — на самом деле 4 кредита.\n🧠 База: Солярис, свой дом за кэш, два вклада, брокерский счёт. Живёт как в Москве на 400к — трёшка тут как однушка за МКАДом. Воронежский Уоррен Баффетт.' }
-    ]
-  },
-  lsk: {
-    name: 'Лиски, Воронежская обл.', currency: '₽/мес', symbol: '₽',
-    tiers: [
-      { max: 18000, color: 1, label: 'x < 18 000 ₽', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Кредитный телефон, кальян на последние, репосты про «мотивацию» в Одноклассниках. Мечтает о BMW, ездит пешком.\n🧠 База: Зарплата продавца в Магните. Живёт с родителями, ест дома, огород спасает. Автобус до работы, телевизор вечером. Ищет вакансии в Воронеже.' },
-      { max: 30000, color: 2, label: '18 000 ₽ < x < 30 000 ₽', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: ВАЗ-2114 с «заряженным» выхлопом и тонировкой в круг. Ночами дрифтит у вокзала, днём должен всем. Весь город знает его по звуку глушака.\n🧠 База: Своя квартира (от бабушки), старые Жигули на ходу. Средняя зп по городу — грустно, но без долгов. Откладывает по 3к/мес, мечтает о Воронеже.' },
-      { max: 50000, color: 3, label: '30 000 ₽ < x < 50 000 ₽', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Б/у Kia Rio в кредит, поставил литьё и ксенон. Главный «бизнесмен» района, долги растут быстрее понтов.\n🧠 База: Старая Lada Granta за наличку, ремонт в квартире, откладывает на Анапу. Соседи считают зажиточным — по лискинским меркам правильно считают.' },
-      { max: 80000, color: 4, label: '50 000 ₽ < x < 80 000 ₽', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Changan UNI-V, тонировка, музыка на весь двор. Все знают что удалёнщик, но он говорит «бизнес».\n🧠 База: Серебристый Hyundai Solaris 2. Один из самых обеспеченных в городе. «А чем занимаешься?» — удалёнка на Москву. Откладывает 50%, через 2 года — квартира в Воронеже.' },
-      { max: Infinity, color: 5, label: 'x > 80 000 ₽', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Toyota RAV4, новый забор, баня с бильярдом. Весь город обсуждает откуда деньги. Версии: наркотики, IT, наследство.\n🧠 База: Серебристый Solaris 2, свой дом, инвестиции. Можешь купить полгорода. Местная легенда. Смотрят как на инопланетянина, а ты просто мидл на удалёнке.' }
-    ]
-  },
-  ber: {
-    name: 'Берлин', currency: '€/мес (нетто)', symbol: '€',
-    tiers: [
-      { max: 1500, color: 1, label: 'x < 1 500 €', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Овсяное молоко за 3€, винтажная одежда «из секонда» (якобы дизайнерская). Фоткается у Berghain (не пустили). Apple Music подписка на последние.\n🧠 База: WG-комната, дёнер за 5€ — обед и ужин, BVG-проездной. Club-Mate вместо еды. Честно бедный, подрабатывает, учит немецкий.' },
-      { max: 2500, color: 2, label: '1 500 € < x < 2 500 €', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Б/у BMW 1 E87 — «это же BMW!». Страховка €200/мес, парковки нет, бензин €2/л. Машина стоит, он ездит на U-Bahn.\n🧠 База: Маленькая квартира (если нашёл — поздравляем), велосипед, бюджетная еда, бесплатные парки. Откладывает в ETF. Типичный берлинец.' },
-      { max: 4000, color: 3, label: '2 500 € < x < 4 000 €', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Audi A3 в лизинг €400/мес — ради понта. Рестораны каждые выходные, на пенсию — €0. «Пенсия? Это для бумеров».\n🧠 База: Хорошая квартира, велосипед, Flixbus по Европе. 42% налогов больно, но пенсионные копятся. Готовит дома, ETF на автомате.' },
-      { max: 6000, color: 4, label: '4 000 € < x < 6 000 €', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Mercedes C W206, квартира в Митте за €1800 warm. Красиво, но Finanzamt съедает душу. Шаг от налоговой проверки до паники.\n🧠 База: Велосипед (в Берлине авто — для чудаков), большая квартира, хобби, инвестиции. По берлинским меркам — богач. ETF и Riester на максимум.' },
-      { max: Infinity, color: 5, label: 'x > 6 000 €', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Porsche Macan, квартира в Шарлоттенбурге. Всё красиво, но Grunderwerbsteuer 6% сверху — сюрприз.\n🧠 База: Велосипед. Купил квартиру за кэш. Деньги в ETF, пассивный доход. Рестораны без счёта. Налоги больно, но свобода — бесценна.' }
-    ]
-  },
-  par: {
-    name: 'Париж', currency: '€/мес (нетто)', symbol: '€',
-    tiers: [
-      { max: 1800, color: 1, label: 'x < 1 800 €', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Один эспрессо за €8 в Café de Flore, сидит 4 часа с ноутбуком. Инста: «моя парижская жизнь». Ест багет с водой.\n🧠 База: Chambre de bonne 9м², макароны, метро. Париж из окна. Но без долгов, учит французский, ищет работу получше.' },
-      { max: 3000, color: 2, label: '1 800 € < x < 3 000 €', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Старый Renault Clio — в Париже! Парковка €300/мес, штрафы, бензин. Машина стоит, он едет на RER. Но «у меня есть машина».\n🧠 База: Студия в пригороде, RER, Navigo pass. Кафе — эспрессо стоя у стойки за €1.50. Откладывает на Livret A. Терпеливый.' },
-      { max: 5000, color: 3, label: '3 000 € < x < 5 000 €', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Peugeot 308 в лизинг, ужины для Инсты. Круассан за 3€/день = 90€/мес, и он не считает.\n🧠 База: Метро + Vélib. Квартира в городе, вино из Monoprix за €5 (отличное). Считает круассаны, но живёт без долгов. PEA растёт.' },
-      { max: 8000, color: 4, label: '5 000 € < x < 8 000 €', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: BMW X1, квартира в 16-м округе (маленькая, но адрес!). Мишлен раз в месяц, потом неделю экономит.\n🧠 База: Метро, хорошая квартира, гастрономия, театры, Лазурный берег на TGV. Перестаёт считать круассаны. PEA и assurance-vie растут.' },
-      { max: Infinity, color: 5, label: 'x > 8 000 €', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Mercedes GLC, квартира в Марэ. Brunch за €80 каждые выходные. Инста идеальная, счёт — нет.\n🧠 База: Métro + ноги. Квартира в 6-м округе за кэш. Инвестиции в SCPI и недвижку. Может позволить Bentley, но зачем машина в Париже? Liberté — финансовая.' }
-    ]
-  },
-  ldn: {
-    name: 'Лондон', currency: '£/мес (нетто)', symbol: '£',
-    tiers: [
-      { max: 2000, color: 1, label: 'x < 2 000 £', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Пинта за £7 на последние, фоткается у Биг-Бена «living my best life». Ест бобы из банки дома.\n🧠 База: Комната в зоне 4+, Tesco Value, автобус. Дождь бесплатный. Откладывает хоть £50/мес на ISA. Ищет работу.' },
-      { max: 3500, color: 2, label: '2 000 £ < x < 3 500 £', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Б/у BMW 3 F30 — congestion charge £15/день, страховка £200/мес, парковки нет. Машина стоит, он на Tube.\n🧠 База: Маленькая квартира, Oyster card, Primark. Паб — одна пинта. Tube £150/мес больно, но Stocks & Shares ISA растёт.' },
-      { max: 5500, color: 3, label: '3 500 £ < x < 5 500 £', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Audi A3 в лизинг, ужины в Soho. ULEZ + congestion = £400/мес. «Но я же в Лондоне на Ауди».\n🧠 База: Tube + велик. Квартира в зоне 2-3, EasyJet в Европу, fish & chips без угрызений. Pension на максимум.' },
-      { max: 8000, color: 4, label: '5 500 £ < x < 8 000 £', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Range Rover Evoque, квартира в Canary Wharf. Красиво, mortgage — 60% дохода.\n🧠 База: Tube (зачем в Лондоне машина?). Просторная квартира, West End, серьёзные накопления. ISA, SIPP, ETF. Отпуск куда хочешь.' },
-      { max: Infinity, color: 5, label: 'x > 8 000 £', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: G-Class в Лондоне (congestion £15/день, парковка £800/мес). Квартира в Chelsea в mortgage. Инста — огонь, банк — тревога.\n🧠 База: Tube обычно, такси иногда. Своя квартира за кэш (£500к+ — серьёзно). Pension и ISA на макс, passive income. Свобода.' }
-    ]
-  },
-  beg: {
-    name: 'Белград', currency: '€/мес (нетто)', symbol: '€',
-    tiers: [
-      { max: 600, color: 1, label: 'x < 600 €', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Samsung в рассрочку, кальян в Savamala на последние, фото с чужим BMW на Бранковом мосту.\n🧠 База: Средняя сербская зп. Квартира на окраине, кафана раз в месяц. Домашняя ракия — и лекарство, и развлечение. Без долгов.' },
-      { max: 1200, color: 2, label: '600 € < x < 1 200 €', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Убитый Audi A4 B6 за €3к. Ремонт дороже машины, но «немец же». Паркуется на Скадарлии, сидит с одним пивом.\n🧠 База: Квартира получше, кафана по пятницам. Ракия домашняя — покупная дорого. Откладывает что может. Лучше среднего серба.' },
-      { max: 2500, color: 3, label: '1 200 € < x < 2 500 €', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: VW Golf 8 в кредит — «европейский уровень». Рестораны каждую неделю, потом экономит на чевапах.\n🧠 База: Старый Fiat Punto или автобус. Хорошая квартира, рестораны иногда. Типичный IT-шник. Сербы смотрят как на миллионера.' },
-      { max: 4000, color: 4, label: '2 500 € < x < 4 000 €', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: BMW X3, квартира на Vračar. Все думают boss, банк думает «верни кредит».\n🧠 База: Старый VW Golf за кэш, купит квартиру за пару лет (Белград ещё дёшев). Рестораны, поездки, инвестиции. Не выпендривается. Дзен.' },
-      { max: Infinity, color: 5, label: 'x > 4 000 €', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Mercedes E, квартира на Waterfront, часы Hublot. Весь Белград обсуждает. В кредит, конечно.\n🧠 База: Квартира за кэш, старый VW Golf (в Белграде пофиг на тачку). Шейх на сербские цены, но без золотых часов. Деньги работают.' }
-    ]
-  },
-  tbs: {
-    name: 'Тбилиси', currency: '$/мес', symbol: '$',
-    tiers: [
-      { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: iPhone, фотки в Fabrika на один кофе за 15 лари. Сторис «Тбилиси вайб». Ест хачапури и хлеб.\n🧠 База: Средняя грузинская зп. Хинкали, маршрутка за 1 лари, экономия. Вино дешёвое — единственное утешение. Без долгов.' },
-      { max: 1200, color: 2, label: '500 $ < x < 1 200 $', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Убитый Mercedes W211 (в Грузии все на мерсах) — ремонт дороже машины. Паркуется у Wine Underground, сидит с одним бокалом.\n🧠 База: Квартира, нормальная еда, иногда ресторан. По грузинским меркам — неплохо. По московским — пенсия. Откладывает.' },
-      { max: 2500, color: 3, label: '1 200 $ < x < 2 500 $', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Hyundai Tucson в кредит, рестораны каждый день — «я релокант, живу на полную». Накоплений — ноль.\n🧠 База: Bolt (такси за копейки), квартира в центре, хинкальные, поездки по Грузии. Типичный релокант. Местные ненавидят за цены, но копит.' },
-      { max: 4000, color: 4, label: '2 500 $ < x < 4 000 $', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: BMW X5, квартира на Вере. Дорогие рестораны, Bassiani. Тратит всё.\n🧠 База: Bolt, хорошая квартира, рестораны без фанатизма. По тбилисским — олигарх. Через год — квартира за кэш.' },
-      { max: Infinity, color: 5, label: 'x > 4 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Porsche Cayenne по тбилисским ямам (удачи). Всё напоказ.\n🧠 База: Квартира за кэш, метро + Bolt (зачем в Тбилиси авто?). Вино, хинкали, горы — бесконечно. Деньги в бизнесе. Генацвале-дзен.' }
-    ]
-  },
-  nyc: {
-    name: 'Нью-Йорк', currency: '$/мес (после налогов)', symbol: '$',
-    tiers: [
-      { max: 3000, color: 1, label: 'x < 3 000 $', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Коктейль за $22 в Williamsburg на последние, фотки на Times Square «NYC baby!». Возвращается к 3 соседям, ест dollar pizza.\n🧠 База: Комната в Бруклине, subway, dollar pizza. NYC жуёт и выплёвывает, но база не сдаётся. Ищет работу, не лезет в долги.' },
-      { max: 5500, color: 2, label: '3 000 $ < x < 5 500 $', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Б/у BMW 3 — парковка $500/мес, страховка $300/мес. Машина стоит, он на subway. Зато «у меня BMW в NYC».\n🧠 База: Студия в Квинсе, subway, Central Park бесплатный. 401k employer match — бесплатные деньги, база не упускает.' },
-      { max: 9000, color: 3, label: '5 500 $ < x < 9 000 $', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Audi Q3 в лизинг, Nobu раз в месяц ($300). Остальные 29 дней — Chipotle.\n🧠 База: Subway + Citi Bike. Однушка, рестораны, Бродвей. 401k на макс, Roth IRA. Понимаешь зачем люди живут в NYC.' },
-      { max: 15000, color: 4, label: '9 000 $ < x < 15 000 $', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Tesla Model 3 на Манхэттене (зачем??), квартира в SoHo (80% на rent). Инста — огонь, банк — anxiety.\n🧠 База: Uber иногда, subway обычно. Хорошая квартира, рестораны, серьёзные накопления. Квартиру купить — всё ещё NYC.' },
-      { max: Infinity, color: 5, label: 'x > 15 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Porsche Taycan (congestion $15/день, парковка $800/мес). Penthouse в Tribeca в mortgage. Красиво, но fragile.\n🧠 База: Такси иногда. Студия на Манхэттене за $1М кэшем (наконец!). 401k, Roth, taxable — всё на макс. Money talks, subway walks.' }
-    ]
-  },
-  sfbay: {
-    name: 'SF / Bay Area', currency: '$/мес (после налогов)', symbol: '$',
-    tiers: [
-      { max: 4000, color: 1, label: 'x < 4 000 $', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Oat milk latte за $8 в Blue Bottle каждый день, MacBook в коворкинге «hustle culture». Ест instant ramen.\n🧠 База: Комната с соседями, лапша, автобус. Долина вокруг, но не для тебя. Tesla проезжает мимо — мотивация бесплатная.' },
-      { max: 7000, color: 2, label: '4 000 $ < x < 7 000 $', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Лизинг на б/у Tesla Model 3 — «я же в Долине, нужна Tesla». Зарядка + страховка + payment = $900/мес при зп стажёра.\n🧠 База: Студия, б/у Toyota Prius (в Bay Area без авто никак). Все обсуждают опционы, база изучает index funds. Costco — лучшая инвестиция.' },
-      { max: 12000, color: 3, label: '7 000 $ < x < 12 000 $', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Tesla Model Y в лизинг, Sweetgreen за $20/день. «Я SWE в Долине» — 401k на нуле, RSU тратит сразу.\n🧠 База: Тот же Prius. Квартира, рестораны иногда. 401k на макс, RSU вестятся, mega backdoor Roth. Дом — лол, медиана $1.5М.' },
-      { max: 20000, color: 4, label: '12 000 $ < x < 20 000 $', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: BMW X5 + Tesla для жены, дом $2М в ипотеку, Peloton. От paycheck до paycheck на $20k/мес. FAANG senior, FIRE — never.\n🧠 База: Prius. Дом с 20% down. 401k на макс, RSU не трогает. FAANG senior, живёт как мидл. FIRE через 5 лет реален.' },
-      { max: Infinity, color: 5, label: 'x > 20 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Porsche Taycan, дом в Пало-Альто $4М в mortgage, стартап-инвестиции в друзей (все прогорели). Выглядит миллионер, net worth отрицательный.\n🧠 База: Prius (легенда парковки Google). Дом за кэш, AngelList (диверсифицированно), early retirement вчера. Staff+ или founder. Мечта.' }
-    ]
-  },
-  dxb: {
-    name: 'Дубай', currency: '$/мес (без налогов!)', symbol: '$',
-    tiers: [
-      { max: 2000, color: 1, label: 'x < 2 000 $', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Фоткается у Бурдж-Халифы и Dubai Mall, живёт в Дейре с 5 соседями. Кредитный iPhone, мечты о Lambo.\n🧠 База: Комната, экономия, жара +45. Дубай гламурный мимо. Пляж бесплатный. Копит чтобы подняться — зато без налогов.' },
-      { max: 4000, color: 2, label: '2 000 $ < x < 4 000 $', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Б/у Dodge Charger (в Дубае все на маслкарах). Salik и страховка съедают всё. Паркуется у Marina Mall.\n🧠 База: Студия в Дейре, метро. Инста-Дубай и твой Дубай — разные города. Но без налогов реально копится.' },
-      { max: 8000, color: 3, label: '4 000 $ < x < 8 000 $', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Nissan Patrol в кредит, квартира в Марине за $3к. Бранчи каждую пятницу за $200. Копилка пустая.\n🧠 База: Toyota Yaris, квартира в JLT (дешевле Марины). Без налогов — копит 30-40%. Молоко $3, пиво $12, зато income tax = 0.' },
-      { max: 15000, color: 4, label: '8 000 $ < x < 15 000 $', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Land Cruiser 300, Марина с видом на Palm. Бранчи в Atlantis $400, яхта арендованная. Тратит 100% без налогов.\n🧠 База: Nissan Sunny (даже в Дубае). Большая квартира, рестораны. БЕЗ НАЛОГОВ откладывает 50%+. За 3 года — капитал на раннюю пенсию.' },
-      { max: Infinity, color: 5, label: 'x > 15 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Lamborghini Urus, вилла на Palm в ипотеку, яхт-клуб. Инста 100к подписчиков. Реальный баланс — страшно смотреть.\n🧠 База: Nissan Sunny (легенда дубайских дорог). Вилла за кэш, деньги в бизнесе. Без налогов весь доход работает. Друзья из Европы плачут свои 42%. Рай.' }
-    ]
-  },
-  tha: {
-    name: 'Таиланд', currency: '$/мес', symbol: '$',
-    tiers: [
-      { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Арендовал мотобайк покруче, фоткается на пляже «digital nomad life». На еду — pad thai за $1 три раза в день.\n🧠 База: Комната, pad thai, старенький Honda Click. Как тайцы — тепло, пальмы, денег нет. Ищет удалёнку, не лезет в долги.' },
-      { max: 1000, color: 2, label: '500 $ < x < 1 000 $', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Honda PCX подороже + GoPro, влоги «как я живу в Таиланде». 10 просмотров, 0 доходов.\n🧠 База: Студия с кондеем, Honda Scoopy, кафе. Лучше среднего тайца. Массаж $5 — заслуженная роскошь. Откладывает.' },
-      { max: 2000, color: 3, label: '1 000 $ < x < 2 000 $', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Toyota Fortuner в аренду, кондо с infinity pool, beach club каждые выходные. Тратит 100%, сторис огонь.\n🧠 База: Honda Click, кондо с бассейном (и так дёшево), рестораны, острова. Номад-лайф. Работает 8 часов, но на Wise копится.' },
-      { max: 4000, color: 4, label: '2 000 $ < x < 4 000 $', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: BMW X3 в аренду (зачем в Таиланде??), вилла, beach club VIP. Кончится удалёнка — кончится всё.\n🧠 База: Yamaha NMAX. Кондо на берегу, лучшие рестораны, острова. Откладывает 50% — в Таиланде элементарно. FIRE через пару лет.' },
-      { max: Infinity, color: 5, label: 'x > 4 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: G-Class по тайским дорогам (ямы, наводнения, удачи). Вилла, катер. Всё напоказ.\n🧠 База: Yamaha NMAX (машина в Таиланде — для чудаков). Вилла, повар, бизнес-класс по ЮВА. Тратит 20%. Рай — и финансовый тоже.' }
-    ]
-  },
-  chn: {
-    name: 'Китай (Шанхай/Пекин)', currency: '$/мес (после налогов)', symbol: '$',
-    tiers: [
-      { max: 800, color: 1, label: 'x < 800 $', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Huawei в рассрочку, фотки на Бунде «жизнь в Шанхае». Ест лапшу за ¥10. WeChat Moments — сплошной понт.\n🧠 База: Комнатка, уличная еда, метро. 996 — с 9 до 9, 6 дней. Учит китайский, ищет шанс. Копит на Alipay.' },
-      { max: 1500, color: 2, label: '800 $ < x < 1 500 $', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Б/у BYD в кредит — «электрокар, я современный». Зарядка — очередь 2 часа. Зато «на электричке».\n🧠 База: Квартирка, нормальная еда, метро. Taobao на минималках. VPN — обязательный расход. Откладывает на Yu\'e Bao.' },
-      { max: 3000, color: 3, label: '1 500 $ < x < 3 000 $', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: NIO ES6 в кредит, hot pot за ¥500. «Я в Шанхае, я успешный». Накопления ¥0.\n🧠 База: Метро + электроскутер, хорошая квартира, рестораны, Taobao без лимитов. Hot pot по пятницам. Жить и копить можно.' },
-      { max: 6000, color: 4, label: '3 000 $ < x < 6 000 $', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Tesla Model Y, экспат-бары каждые выходные за ¥2000. Красиво, но на счету ¥0.\n🧠 База: BYD Seagull за кэш (¥70к — дешевле iPhone), хорошая квартира, путешествия по Азии. Доставка за ¥15 — Китай, детка. Деньги на международных счетах.' },
-      { max: Infinity, color: 5, label: 'x > 6 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: Porsche Taycan, квартира в Пудуне. Выглядит boss, VPN не работает, деньги вывести — квест уровня Dark Souls.\n🧠 База: BYD Seagull + Didi. Квартира с видом на skyline, лучшие рестораны. VPN премиум (всё посчитал). Свобода финансовая — есть. Остальная — как повезёт.' }
-    ]
-  },
-  bali: {
-    name: 'Бали', currency: '$/мес', symbol: '$',
-    tiers: [
-      { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', name: 'смерть в нищете',
-        desc: '🤡 Понторез: Мотобайк покруче, фотки на рисовых террасах, сторис «Bali vibes». Ест варунг за $1, каморка без кондея.\n🧠 База: Как балийцы. Комнатушка, варунг, Honda Scoopy. Закат красивый, но на пустой желудок не то. Работает над скиллами.' },
-      { max: 1000, color: 2, label: '500 $ < x < 1 000 $', emoji: '🪦', name: 'лютая нищета',
-        desc: '🤡 Понторез: Nmax подороже + дрон для контента. Коворкинг $150/мес чтобы фоткать ноутбук у бассейна. Контента много, денег нет.\n🧠 База: Скромная вилла (без бассейна), коворкинг, кафешка. Бали на минималках. Сёрфинг если доска своя. Копит.' },
-      { max: 2000, color: 3, label: '1 000 $ < x < 2 000 $', emoji: '😐', name: 'нормальная обычная нищета',
-        desc: '🤡 Понторез: Арендовал машину, вилла с infinity pool, beach club ($100+ вход). Инста — огонь, Wise — ноль.\n🧠 База: Honda Scoopy, вилла с бассейном (и так дёшево), рестораны, закаты с коктейлем. Zoom в 3 ночи из-за часовых поясов, зато откладывает.' },
-      { max: 3500, color: 4, label: '2 000 $ < x < 3 500 $', emoji: '🙂', name: 'нормальная жизнь',
-        desc: '🤡 Понторез: Toyota Fortuner, вилла, beach-клубы VIP. Тратит 100%. Кончится контракт — к маме.\n🧠 База: Yamaha NMAX, хорошая вилла, дайвинг, йога. Как в рекламе, но откладывает 40%. Хочет нормальную больницу, но терпит.' },
-      { max: Infinity, color: 5, label: 'x > 3 500 $', emoji: '👑', name: 'достаточно хорошая жизнь',
-        desc: '🤡 Понторез: G-Class на Бали (по этим дорогам?!). Вилла мечты, повар, Gili на спидботе. Всё в Инсту.\n🧠 База: Yamaha NMAX (машина на Бали — самоубийство). Вилла мечты, повар, острова. Тратит 20%. Москвичи на 300к рыдают.' }
-    ]
+  const DATA = {
+    msk: {
+      name: 'Москва', currency: '₽/мес', symbol: '₽',
+      tiers: [
+        { max: 80000, color: 1, label: 'x < 80 000 ₽', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Берёт iPhone 15 Pro Max в микрозайм под 365% годовых, ест доширак, стреляет сигареты у метро, но в ВК цитирует Джейсона Стэйтема про успех и выкладывает фото с чужой BMW.\n🧠 База: Снимает койко-место, ездит на автобусе, закупается в Пятёрочке по красным ценникам. Беден, но без долгов, учится и ищет нормальную работу.' },
+        { max: 150000, color: 2, label: '80 000 ₽ < x < 150 000 ₽', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Взял убитый BMW X5 E53 или гнилой Mercedes W211 в кредит под 30% годовых. Денег на бензин нет — машина стоит во дворе клумбой. Зато «я на премиуме, братан». ОСАГО просрочен.\n🧠 База: Снимает студию за МКАДом, ездит на метро с проездным. Питается скромно, но откладывает 10% на вклад. Изучает сложный процент. Через 3 года будет подушка.' },
+        { max: 300000, color: 3, label: '150 000 ₽ < x < 300 000 ₽', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Взял свежий Geely Monjaro или Changan Uni-K в автокредит на 8 лет. Половина зп на платёж, вторая — на КАСКО и детейлинг. Жрёт макароны, но в пробке на МКАДе чувствует себя боссом.\n🧠 База: Продал кредитный хлам. Купил Lada Granta за наличку или гоняет на каршеринге. Понял, что понты не работают. Копит подушку в 6 зарплат, открыл брокерский счёт.' },
+        { max: 500000, color: 4, label: '300 000 ₽ < x < 500 000 ₽', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Тянет ипотеку на бизнес-класс в Хамовниках, взял BMW 5 G60 или Mercedes E W214 из салона. Живёт от зп до зп, трясётся над каждой царапиной. Одно увольнение — банкротство.\n🧠 База: Познал дзен. Взял надёжный серебристый Hyundai Solaris 2. Не парится из-за притёртостей, ездит в кайф. Ипотека на двушку, инвестирует остаток, капитал растёт, спит спокойно.' },
+        { max: 1000000, color: 5, label: '500 000 ₽ < x < 1 000 000 ₽', emoji: '😊', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Rolex Submariner за 2 мульта, Гелик G63 AMG обновляет каждый год, носит Gucci с огромными логотипами. Девушка тратит больше, чем он зарабатывает.\n🧠 База: Доходы давно позволяют Porsche Cayenne за кэш, но продолжает гонять на серебристом Солярисе. Деньги работают в бизнесе, акциях и недвижимости, а не гниют в железе на парковке.' },
+        { max: Infinity, color: 6, label: 'x > 1 000 000 ₽', emoji: '👑', name: 'достаточно хорошая жизнь+',
+          desc: '🤡 Понторез: Lamborghini Urus, квартира в Сити за 200 мультов в ипотеку, бутылка в Сохо Румс за 500к. Всё напоказ, за фасадом — пустота и кассовый разрыв.\n🧠 База: Серебристый Солярис уже легендарный. Пассивный доход перекрывает расходы в 5 раз. Может купить любую машину в мире за кэш, но зачем? Настоящее богатство — свобода, а не железо.' }
+      ]
+    },
+    spb: {
+      name: 'Санкт-Петербург', currency: '₽/мес', symbol: '₽',
+      tiers: [
+        { max: 60000, color: 1, label: 'x < 60 000 ₽', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: iPhone в рассрочку, подписка на Яндекс.Плюс — единственная роскошь, фотки на фоне Эрмитажа как будто туда ходит. Цитаты Хабиба в сторис.\n🧠 База: Комната в коммуналке, автобус, Пятёрочка. Серое небо бесплатно. Честно ищет работу получше, не залезает в долги. Эрмитаж по четвергам бесплатно.' },
+        { max: 120000, color: 2, label: '60 000 ₽ < x < 120 000 ₽', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Нашёл на Авито убитый Range Rover Evoque 2013 за 900к в кредит. Течёт всё, жрёт 18 литров, но «я же на Рейндже, бро». Парковка на газоне у хрущёвки.\n🧠 База: Однушка в спальнике, проездной на метро, откладывает на вклад. Бар по пятницам — одна пинта крафта и домой. Мокнет под дождём, но не от долгов.' },
+        { max: 250000, color: 3, label: '120 000 ₽ < x < 250 000 ₽', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Chery Tiggo 7 Pro Max в кредит на 7 лет, КАСКО обязательно — страшно поцарапать. Жена хочет на Рубинштейна, бюджет — столовая.\n🧠 База: Серебристый Hyundai Solaris 2 или каршеринг, квартира ближе к центру. Кафе на Рубинштейна иногда, но без фанатизма. Копит на первый взнос, инвестирует остаток.' },
+        { max: 400000, color: 4, label: '250 000 ₽ < x < 400 000 ₽', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: BMW 3 G20 из салона, ипотека на трёшку у Финского залива. Красиво, но платежи 70% дохода. Один больничный — карточный домик.\n🧠 База: Солярис, ипотека на двушку с комфортным платежом. Рестораны, Финляндия на выходные, откладывает. В Питере дешевле Москвы — база это использует.' },
+        { max: Infinity, color: 5, label: 'x > 400 000 ₽', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Mercedes GLE Coupe, квартира на Крестовском, брендовые шмотки. Инста идеальный, банковский счёт — нет.\n🧠 База: Солярис (легенда двора на Петроградке). Квартира за кэш, пассивный доход, инвестиции. Друзья из Москвы завидуют — тот же капитал, но город красивее.' }
+      ]
+    },
+    vrn: {
+      name: 'Воронеж', currency: '₽/мес', symbol: '₽',
+      tiers: [
+        { max: 25000, color: 1, label: 'x < 25 000 ₽', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Кредитный Xiaomi за 40к, кальян по пятницам в долг, репостит «Волка с Уолл-стрит» в ВК. На еду — доширак и хлеб.\n🧠 База: Живёт у родителей, ездит на маршрутке, ест дома. Прогулка по набережной бесплатно. Ищет работу, учится на курсах. Воронеж — миллионник, шансы есть.' },
+        { max: 45000, color: 2, label: '25 000 ₽ < x < 45 000 ₽', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Взял мёртвый Mercedes W210 CDI за 250к в кредит. Масло жрёт литр на 1000 км, но паркуется у ТЦ «Галерея Чижова» и сидит в машине.\n🧠 База: Снимает однушку, ездит на автобусе. Средняя зп по Воронежу — грустно. Но откладывает по 5к/мес, через год подушка. Кино раз в месяц — заслуженно.' },
+        { max: 80000, color: 3, label: '45 000 ₽ < x < 80 000 ₽', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: OMODA C5 в кредит на 7 лет. Полворонежа знает его тачку, вторая половина — его долги. Ресторан раз в месяц, потом две недели макароны.\n🧠 База: Купил б/у Solaris за наличку, квартира нормальная, откладывает на отпуск. По воронежским — почти элита. По московским — лютая нищета. Зато без долгов.' },
+        { max: 150000, color: 4, label: '80 000 ₽ < x < 150 000 ₽', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Kia K5 в топе из салона, ипотека на трёшку в Северном. Соседи думают олигарх, банк думает так же — отдай долги.\n🧠 База: Солярис, ипотека с комфортным платежом, рестораны, отпуск 2 раза в год. Соседи думают айтишник на удалёнке — правильно думают. Инвестирует 30%.' },
+        { max: Infinity, color: 5, label: 'x > 150 000 ₽', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Toyota Camry XV70 в максималке, дом в Отрадном, брендовые шмотки. Все думают бизнесмен — на самом деле 4 кредита.\n🧠 База: Солярис, свой дом за кэш, два вклада, брокерский счёт. Живёт как в Москве на 400к — трёшка тут как однушка за МКАДом. Воронежский Уоррен Баффетт.' }
+      ]
+    },
+    lsk: {
+      name: 'Лиски, Воронежская обл.', currency: '₽/мес', symbol: '₽',
+      tiers: [
+        { max: 18000, color: 1, label: 'x < 18 000 ₽', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Кредитный телефон, кальян на последние, репосты про «мотивацию» в Одноклассниках. Мечтает о BMW, ездит пешком.\n🧠 База: Зарплата продавца в Магните. Живёт с родителями, ест дома, огород спасает. Автобус до работы, телевизор вечером. Ищет вакансии в Воронеже.' },
+        { max: 30000, color: 2, label: '18 000 ₽ < x < 30 000 ₽', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: ВАЗ-2114 с «заряженным» выхлопом и тонировкой в круг. Ночами дрифтит у вокзала, днём должен всем. Весь город знает его по звуку глушака.\n🧠 База: Своя квартира (от бабушки), старые Жигули на ходу. Средняя зп по городу — грустно, но без долгов. Откладывает по 3к/мес, мечтает о Воронеже.' },
+        { max: 50000, color: 3, label: '30 000 ₽ < x < 50 000 ₽', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Б/у Kia Rio в кредит, поставил литьё и ксенон. Главный «бизнесмен» района, долги растут быстрее понтов.\n🧠 База: Старая Lada Granta за наличку, ремонт в квартире, откладывает на Анапу. Соседи считают зажиточным — по лискинским меркам правильно считают.' },
+        { max: 80000, color: 4, label: '50 000 ₽ < x < 80 000 ₽', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Changan UNI-V, тонировка, музыка на весь двор. Все знают что удалёнщик, но он говорит «бизнес».\n🧠 База: Серебристый Hyundai Solaris 2. Один из самых обеспеченных в городе. «А чем занимаешься?» — удалёнка на Москву. Откладывает 50%, через 2 года — квартира в Воронеже.' },
+        { max: Infinity, color: 5, label: 'x > 80 000 ₽', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Toyota RAV4, новый забор, баня с бильярдом. Весь город обсуждает откуда деньги. Версии: наркотики, IT, наследство.\n🧠 База: Серебристый Solaris 2, свой дом, инвестиции. Можешь купить полгорода. Местная легенда. Смотрят как на инопланетянина, а ты просто мидл на удалёнке.' }
+      ]
+    },
+    ber: {
+      name: 'Берлин', currency: '€/мес (нетто)', symbol: '€',
+      tiers: [
+        { max: 1500, color: 1, label: 'x < 1 500 €', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Овсяное молоко за 3€, винтажная одежда «из секонда» (якобы дизайнерская). Фоткается у Berghain (не пустили). Apple Music подписка на последние.\n🧠 База: WG-комната, дёнер за 5€ — обед и ужин, BVG-проездной. Club-Mate вместо еды. Честно бедный, подрабатывает, учит немецкий.' },
+        { max: 2500, color: 2, label: '1 500 € < x < 2 500 €', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Б/у BMW 1 E87 — «это же BMW!». Страховка €200/мес, парковки нет, бензин €2/л. Машина стоит, он ездит на U-Bahn.\n🧠 База: Маленькая квартира (если нашёл — поздравляем), велосипед, бюджетная еда, бесплатные парки. Откладывает в ETF. Типичный берлинец.' },
+        { max: 4000, color: 3, label: '2 500 € < x < 4 000 €', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Audi A3 в лизинг €400/мес — ради понта. Рестораны каждые выходные, на пенсию — €0. «Пенсия? Это для бумеров».\n🧠 База: Хорошая квартира, велосипед, Flixbus по Европе. 42% налогов больно, но пенсионные копятся. Готовит дома, ETF на автомате.' },
+        { max: 6000, color: 4, label: '4 000 € < x < 6 000 €', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Mercedes C W206, квартира в Митте за €1800 warm. Красиво, но Finanzamt съедает душу. Шаг от налоговой проверки до паники.\n🧠 База: Велосипед (в Берлине авто — для чудаков), большая квартира, хобби, инвестиции. По берлинским меркам — богач. ETF и Riester на максимум.' },
+        { max: Infinity, color: 5, label: 'x > 6 000 €', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Porsche Macan, квартира в Шарлоттенбурге. Всё красиво, но Grunderwerbsteuer 6% сверху — сюрприз.\n🧠 База: Велосипед. Купил квартиру за кэш. Деньги в ETF, пассивный доход. Рестораны без счёта. Налоги больно, но свобода — бесценна.' }
+      ]
+    },
+    par: {
+      name: 'Париж', currency: '€/мес (нетто)', symbol: '€',
+      tiers: [
+        { max: 1800, color: 1, label: 'x < 1 800 €', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Один эспрессо за €8 в Café de Flore, сидит 4 часа с ноутбуком. Инста: «моя парижская жизнь». Ест багет с водой.\n🧠 База: Chambre de bonne 9м², макароны, метро. Париж из окна. Но без долгов, учит французский, ищет работу получше.' },
+        { max: 3000, color: 2, label: '1 800 € < x < 3 000 €', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Старый Renault Clio — в Париже! Парковка €300/мес, штрафы, бензин. Машина стоит, он едет на RER. Но «у меня есть машина».\n🧠 База: Студия в пригороде, RER, Navigo pass. Кафе — эспрессо стоя у стойки за €1.50. Откладывает на Livret A. Терпеливый.' },
+        { max: 5000, color: 3, label: '3 000 € < x < 5 000 €', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Peugeot 308 в лизинг, ужины для Инсты. Круассан за 3€/день = 90€/мес, и он не считает.\n🧠 База: Метро + Vélib. Квартира в городе, вино из Monoprix за €5 (отличное). Считает круассаны, но живёт без долгов. PEA растёт.' },
+        { max: 8000, color: 4, label: '5 000 € < x < 8 000 €', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: BMW X1, квартира в 16-м округе (маленькая, но адрес!). Мишлен раз в месяц, потом неделю экономит.\n🧠 База: Метро, хорошая квартира, гастрономия, театры, Лазурный берег на TGV. Перестаёт считать круассаны. PEA и assurance-vie растут.' },
+        { max: Infinity, color: 5, label: 'x > 8 000 €', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Mercedes GLC, квартира в Марэ. Brunch за €80 каждые выходные. Инста идеальная, счёт — нет.\n🧠 База: Métro + ноги. Квартира в 6-м округе за кэш. Инвестиции в SCPI и недвижку. Может позволить Bentley, но зачем машина в Париже? Liberté — финансовая.' }
+      ]
+    },
+    ldn: {
+      name: 'Лондон', currency: '£/мес (нетто)', symbol: '£',
+      tiers: [
+        { max: 2000, color: 1, label: 'x < 2 000 £', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Пинта за £7 на последние, фоткается у Биг-Бена «living my best life». Ест бобы из банки дома.\n🧠 База: Комната в зоне 4+, Tesco Value, автобус. Дождь бесплатный. Откладывает хоть £50/мес на ISA. Ищет работу.' },
+        { max: 3500, color: 2, label: '2 000 £ < x < 3 500 £', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Б/у BMW 3 F30 — congestion charge £15/день, страховка £200/мес, парковки нет. Машина стоит, он на Tube.\n🧠 База: Маленькая квартира, Oyster card, Primark. Паб — одна пинта. Tube £150/мес больно, но Stocks & Shares ISA растёт.' },
+        { max: 5500, color: 3, label: '3 500 £ < x < 5 500 £', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Audi A3 в лизинг, ужины в Soho. ULEZ + congestion = £400/мес. «Но я же в Лондоне на Ауди».\n🧠 База: Tube + велик. Квартира в зоне 2-3, EasyJet в Европу, fish & chips без угрызений. Pension на максимум.' },
+        { max: 8000, color: 4, label: '5 500 £ < x < 8 000 £', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Range Rover Evoque, квартира в Canary Wharf. Красиво, mortgage — 60% дохода.\n🧠 База: Tube (зачем в Лондоне машина?). Просторная квартира, West End, серьёзные накопления. ISA, SIPP, ETF. Отпуск куда хочешь.' },
+        { max: Infinity, color: 5, label: 'x > 8 000 £', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: G-Class в Лондоне (congestion £15/день, парковка £800/мес). Квартира в Chelsea в mortgage. Инста — огонь, банк — тревога.\n🧠 База: Tube обычно, такси иногда. Своя квартира за кэш (£500к+ — серьёзно). Pension и ISA на макс, passive income. Свобода.' }
+      ]
+    },
+    beg: {
+      name: 'Белград', currency: '€/мес (нетто)', symbol: '€',
+      tiers: [
+        { max: 600, color: 1, label: 'x < 600 €', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Samsung в рассрочку, кальян в Savamala на последние, фото с чужим BMW на Бранковом мосту.\n🧠 База: Средняя сербская зп. Квартира на окраине, кафана раз в месяц. Домашняя ракия — и лекарство, и развлечение. Без долгов.' },
+        { max: 1200, color: 2, label: '600 € < x < 1 200 €', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Убитый Audi A4 B6 за €3к. Ремонт дороже машины, но «немец же». Паркуется на Скадарлии, сидит с одним пивом.\n🧠 База: Квартира получше, кафана по пятницам. Ракия домашняя — покупная дорого. Откладывает что может. Лучше среднего серба.' },
+        { max: 2500, color: 3, label: '1 200 € < x < 2 500 €', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: VW Golf 8 в кредит — «европейский уровень». Рестораны каждую неделю, потом экономит на чевапах.\n🧠 База: Старый Fiat Punto или автобус. Хорошая квартира, рестораны иногда. Типичный IT-шник. Сербы смотрят как на миллионера.' },
+        { max: 4000, color: 4, label: '2 500 € < x < 4 000 €', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: BMW X3, квартира на Vračar. Все думают boss, банк думает «верни кредит».\n🧠 База: Старый VW Golf за кэш, купит квартиру за пару лет (Белград ещё дёшев). Рестораны, поездки, инвестиции. Не выпендривается. Дзен.' },
+        { max: Infinity, color: 5, label: 'x > 4 000 €', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Mercedes E, квартира на Waterfront, часы Hublot. Весь Белград обсуждает. В кредит, конечно.\n🧠 База: Квартира за кэш, старый VW Golf (в Белграде пофиг на тачку). Шейх на сербские цены, но без золотых часов. Деньги работают.' }
+      ]
+    },
+    tbs: {
+      name: 'Тбилиси', currency: '$/мес', symbol: '$',
+      tiers: [
+        { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: iPhone, фотки в Fabrika на один кофе за 15 лари. Сторис «Тбилиси вайб». Ест хачапури и хлеб.\n🧠 База: Средняя грузинская зп. Хинкали, маршрутка за 1 лари, экономия. Вино дешёвое — единственное утешение. Без долгов.' },
+        { max: 1200, color: 2, label: '500 $ < x < 1 200 $', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Убитый Mercedes W211 (в Грузии все на мерсах) — ремонт дороже машины. Паркуется у Wine Underground, сидит с одним бокалом.\n🧠 База: Квартира, нормальная еда, иногда ресторан. По грузинским меркам — неплохо. По московским — пенсия. Откладывает.' },
+        { max: 2500, color: 3, label: '1 200 $ < x < 2 500 $', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Hyundai Tucson в кредит, рестораны каждый день — «я релокант, живу на полную». Накоплений — ноль.\n🧠 База: Bolt (такси за копейки), квартира в центре, хинкальные, поездки по Грузии. Типичный релокант. Местные ненавидят за цены, но копит.' },
+        { max: 4000, color: 4, label: '2 500 $ < x < 4 000 $', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: BMW X5, квартира на Вере. Дорогие рестораны, Bassiani. Тратит всё.\n🧠 База: Bolt, хорошая квартира, рестораны без фанатизма. По тбилисским — олигарх. Через год — квартира за кэш.' },
+        { max: Infinity, color: 5, label: 'x > 4 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Porsche Cayenne по тбилисским ямам (удачи). Всё напоказ.\n🧠 База: Квартира за кэш, метро + Bolt (зачем в Тбилиси авто?). Вино, хинкали, горы — бесконечно. Деньги в бизнесе. Генацвале-дзен.' }
+      ]
+    },
+    nyc: {
+      name: 'Нью-Йорк', currency: '$/мес (после налогов)', symbol: '$',
+      tiers: [
+        { max: 3000, color: 1, label: 'x < 3 000 $', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Коктейль за $22 в Williamsburg на последние, фотки на Times Square «NYC baby!». Возвращается к 3 соседям, ест dollar pizza.\n🧠 База: Комната в Бруклине, subway, dollar pizza. NYC жуёт и выплёвывает, но база не сдаётся. Ищет работу, не лезет в долги.' },
+        { max: 5500, color: 2, label: '3 000 $ < x < 5 500 $', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Б/у BMW 3 — парковка $500/мес, страховка $300/мес. Машина стоит, он на subway. Зато «у меня BMW в NYC».\n🧠 База: Студия в Квинсе, subway, Central Park бесплатный. 401k employer match — бесплатные деньги, база не упускает.' },
+        { max: 9000, color: 3, label: '5 500 $ < x < 9 000 $', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Audi Q3 в лизинг, Nobu раз в месяц ($300). Остальные 29 дней — Chipotle.\n🧠 База: Subway + Citi Bike. Однушка, рестораны, Бродвей. 401k на макс, Roth IRA. Понимаешь зачем люди живут в NYC.' },
+        { max: 15000, color: 4, label: '9 000 $ < x < 15 000 $', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Tesla Model 3 на Манхэттене (зачем??), квартира в SoHo (80% на rent). Инста — огонь, банк — anxiety.\n🧠 База: Uber иногда, subway обычно. Хорошая квартира, рестораны, серьёзные накопления. Квартиру купить — всё ещё NYC.' },
+        { max: Infinity, color: 5, label: 'x > 15 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Porsche Taycan (congestion $15/день, парковка $800/мес). Penthouse в Tribeca в mortgage. Красиво, но fragile.\n🧠 База: Такси иногда. Студия на Манхэттене за $1М кэшем (наконец!). 401k, Roth, taxable — всё на макс. Money talks, subway walks.' }
+      ]
+    },
+    sfbay: {
+      name: 'SF / Bay Area', currency: '$/мес (после налогов)', symbol: '$',
+      tiers: [
+        { max: 4000, color: 1, label: 'x < 4 000 $', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Oat milk latte за $8 в Blue Bottle каждый день, MacBook в коворкинге «hustle culture». Ест instant ramen.\n🧠 База: Комната с соседями, лапша, автобус. Долина вокруг, но не для тебя. Tesla проезжает мимо — мотивация бесплатная.' },
+        { max: 7000, color: 2, label: '4 000 $ < x < 7 000 $', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Лизинг на б/у Tesla Model 3 — «я же в Долине, нужна Tesla». Зарядка + страховка + payment = $900/мес при зп стажёра.\n🧠 База: Студия, б/у Toyota Prius (в Bay Area без авто никак). Все обсуждают опционы, база изучает index funds. Costco — лучшая инвестиция.' },
+        { max: 12000, color: 3, label: '7 000 $ < x < 12 000 $', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Tesla Model Y в лизинг, Sweetgreen за $20/день. «Я SWE в Долине» — 401k на нуле, RSU тратит сразу.\n🧠 База: Тот же Prius. Квартира, рестораны иногда. 401k на макс, RSU вестятся, mega backdoor Roth. Дом — лол, медиана $1.5М.' },
+        { max: 20000, color: 4, label: '12 000 $ < x < 20 000 $', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: BMW X5 + Tesla для жены, дом $2М в ипотеку, Peloton. От paycheck до paycheck на $20k/мес. FAANG senior, FIRE — never.\n🧠 База: Prius. Дом с 20% down. 401k на макс, RSU не трогает. FAANG senior, живёт как мидл. FIRE через 5 лет реален.' },
+        { max: Infinity, color: 5, label: 'x > 20 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Porsche Taycan, дом в Пало-Альто $4М в mortgage, стартап-инвестиции в друзей (все прогорели). Выглядит миллионер, net worth отрицательный.\n🧠 База: Prius (легенда парковки Google). Дом за кэш, AngelList (диверсифицированно), early retirement вчера. Staff+ или founder. Мечта.' }
+      ]
+    },
+    dxb: {
+      name: 'Дубай', currency: '$/мес (без налогов!)', symbol: '$',
+      tiers: [
+        { max: 2000, color: 1, label: 'x < 2 000 $', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Фоткается у Бурдж-Халифы и Dubai Mall, живёт в Дейре с 5 соседями. Кредитный iPhone, мечты о Lambo.\n🧠 База: Комната, экономия, жара +45. Дубай гламурный мимо. Пляж бесплатный. Копит чтобы подняться — зато без налогов.' },
+        { max: 4000, color: 2, label: '2 000 $ < x < 4 000 $', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Б/у Dodge Charger (в Дубае все на маслкарах). Salik и страховка съедают всё. Паркуется у Marina Mall.\n🧠 База: Студия в Дейре, метро. Инста-Дубай и твой Дубай — разные города. Но без налогов реально копится.' },
+        { max: 8000, color: 3, label: '4 000 $ < x < 8 000 $', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Nissan Patrol в кредит, квартира в Марине за $3к. Бранчи каждую пятницу за $200. Копилка пустая.\n🧠 База: Toyota Yaris, квартира в JLT (дешевле Марины). Без налогов — копит 30-40%. Молоко $3, пиво $12, зато income tax = 0.' },
+        { max: 15000, color: 4, label: '8 000 $ < x < 15 000 $', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Land Cruiser 300, Марина с видом на Palm. Бранчи в Atlantis $400, яхта арендованная. Тратит 100% без налогов.\n🧠 База: Nissan Sunny (даже в Дубае). Большая квартира, рестораны. БЕЗ НАЛОГОВ откладывает 50%+. За 3 года — капитал на раннюю пенсию.' },
+        { max: Infinity, color: 5, label: 'x > 15 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Lamborghini Urus, вилла на Palm в ипотеку, яхт-клуб. Инста 100к подписчиков. Реальный баланс — страшно смотреть.\n🧠 База: Nissan Sunny (легенда дубайских дорог). Вилла за кэш, деньги в бизнесе. Без налогов весь доход работает. Друзья из Европы плачут свои 42%. Рай.' }
+      ]
+    },
+    tha: {
+      name: 'Таиланд', currency: '$/мес', symbol: '$',
+      tiers: [
+        { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Арендовал мотобайк покруче, фоткается на пляже «digital nomad life». На еду — pad thai за $1 три раза в день.\n🧠 База: Комната, pad thai, старенький Honda Click. Как тайцы — тепло, пальмы, денег нет. Ищет удалёнку, не лезет в долги.' },
+        { max: 1000, color: 2, label: '500 $ < x < 1 000 $', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Honda PCX подороже + GoPro, влоги «как я живу в Таиланде». 10 просмотров, 0 доходов.\n🧠 База: Студия с кондеем, Honda Scoopy, кафе. Лучше среднего тайца. Массаж $5 — заслуженная роскошь. Откладывает.' },
+        { max: 2000, color: 3, label: '1 000 $ < x < 2 000 $', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Toyota Fortuner в аренду, кондо с infinity pool, beach club каждые выходные. Тратит 100%, сторис огонь.\n🧠 База: Honda Click, кондо с бассейном (и так дёшево), рестораны, острова. Номад-лайф. Работает 8 часов, но на Wise копится.' },
+        { max: 4000, color: 4, label: '2 000 $ < x < 4 000 $', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: BMW X3 в аренду (зачем в Таиланде??), вилла, beach club VIP. Кончится удалёнка — кончится всё.\n🧠 База: Yamaha NMAX. Кондо на берегу, лучшие рестораны, острова. Откладывает 50% — в Таиланде элементарно. FIRE через пару лет.' },
+        { max: Infinity, color: 5, label: 'x > 4 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: G-Class по тайским дорогам (ямы, наводнения, удачи). Вилла, катер. Всё напоказ.\n🧠 База: Yamaha NMAX (машина в Таиланде — для чудаков). Вилла, повар, бизнес-класс по ЮВА. Тратит 20%. Рай — и финансовый тоже.' }
+      ]
+    },
+    chn: {
+      name: 'Китай (Шанхай/Пекин)', currency: '$/мес (после налогов)', symbol: '$',
+      tiers: [
+        { max: 800, color: 1, label: 'x < 800 $', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Huawei в рассрочку, фотки на Бунде «жизнь в Шанхае». Ест лапшу за ¥10. WeChat Moments — сплошной понт.\n🧠 База: Комнатка, уличная еда, метро. 996 — с 9 до 9, 6 дней. Учит китайский, ищет шанс. Копит на Alipay.' },
+        { max: 1500, color: 2, label: '800 $ < x < 1 500 $', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Б/у BYD в кредит — «электрокар, я современный». Зарядка — очередь 2 часа. Зато «на электричке».\n🧠 База: Квартирка, нормальная еда, метро. Taobao на минималках. VPN — обязательный расход. Откладывает на Yu\'e Bao.' },
+        { max: 3000, color: 3, label: '1 500 $ < x < 3 000 $', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: NIO ES6 в кредит, hot pot за ¥500. «Я в Шанхае, я успешный». Накопления ¥0.\n🧠 База: Метро + электроскутер, хорошая квартира, рестораны, Taobao без лимитов. Hot pot по пятницам. Жить и копить можно.' },
+        { max: 6000, color: 4, label: '3 000 $ < x < 6 000 $', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Tesla Model Y, экспат-бары каждые выходные за ¥2000. Красиво, но на счету ¥0.\n🧠 База: BYD Seagull за кэш (¥70к — дешевле iPhone), хорошая квартира, путешествия по Азии. Доставка за ¥15 — Китай, детка. Деньги на международных счетах.' },
+        { max: Infinity, color: 5, label: 'x > 6 000 $', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: Porsche Taycan, квартира в Пудуне. Выглядит boss, VPN не работает, деньги вывести — квест уровня Dark Souls.\n🧠 База: BYD Seagull + Didi. Квартира с видом на skyline, лучшие рестораны. VPN премиум (всё посчитал). Свобода финансовая — есть. Остальная — как повезёт.' }
+      ]
+    },
+    bali: {
+      name: 'Бали', currency: '$/мес', symbol: '$',
+      tiers: [
+        { max: 500, color: 1, label: 'x < 500 $', emoji: '💀', name: 'смерть в нищете',
+          desc: '🤡 Понторез: Мотобайк покруче, фотки на рисовых террасах, сторис «Bali vibes». Ест варунг за $1, каморка без кондея.\n🧠 База: Как балийцы. Комнатушка, варунг, Honda Scoopy. Закат красивый, но на пустой желудок не то. Работает над скиллами.' },
+        { max: 1000, color: 2, label: '500 $ < x < 1 000 $', emoji: '🪦', name: 'лютая нищета',
+          desc: '🤡 Понторез: Nmax подороже + дрон для контента. Коворкинг $150/мес чтобы фоткать ноутбук у бассейна. Контента много, денег нет.\n🧠 База: Скромная вилла (без бассейна), коворкинг, кафешка. Бали на минималках. Сёрфинг если доска своя. Копит.' },
+        { max: 2000, color: 3, label: '1 000 $ < x < 2 000 $', emoji: '😐', name: 'нормальная обычная нищета',
+          desc: '🤡 Понторез: Арендовал машину, вилла с infinity pool, beach club ($100+ вход). Инста — огонь, Wise — ноль.\n🧠 База: Honda Scoopy, вилла с бассейном (и так дёшево), рестораны, закаты с коктейлем. Zoom в 3 ночи из-за часовых поясов, зато откладывает.' },
+        { max: 3500, color: 4, label: '2 000 $ < x < 3 500 $', emoji: '🙂', name: 'нормальная жизнь',
+          desc: '🤡 Понторез: Toyota Fortuner, вилла, beach-клубы VIP. Тратит 100%. Кончится контракт — к маме.\n🧠 База: Yamaha NMAX, хорошая вилла, дайвинг, йога. Как в рекламе, но откладывает 40%. Хочет нормальную больницу, но терпит.' },
+        { max: Infinity, color: 5, label: 'x > 3 500 $', emoji: '👑', name: 'достаточно хорошая жизнь',
+          desc: '🤡 Понторез: G-Class на Бали (по этим дорогам?!). Вилла мечты, повар, Gili на спидботе. Всё в Инсту.\n🧠 База: Yamaha NMAX (машина на Бали — самоубийство). Вилла мечты, повар, острова. Тратит 20%. Москвичи на 300к рыдают.' }
+      ]
+    }
+  };
+
+  let currentCity = 'msk';
+
+  function formatNumber(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
-};
 
-let currentCity = 'msk';
+  function renderTiers(cityKey) {
+    const city = DATA[cityKey];
+    const container = document.getElementById('tiers-container');
+    document.getElementById('config-file').textContent = cityKey;
+    document.getElementById('city-name').textContent = city.name;
+    document.getElementById('currency-label').textContent = city.currency;
+    document.getElementById('currency-input').textContent = city.currency;
 
-function formatNumber(n) {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-}
-
-function renderTiers(cityKey) {
-  const city = DATA[cityKey];
-  const container = document.getElementById('tiers-container');
-  document.getElementById('config-file').textContent = cityKey;
-  document.getElementById('city-name').textContent = city.name;
-  document.getElementById('currency-label').textContent = city.currency;
-  document.getElementById('currency-input').textContent = city.currency;
-
-  container.innerHTML = city.tiers.map(t => `
+    container.innerHTML = city.tiers.map(t => `
     <div class="tier tier-${t.color}">
       <div class="tier-range">${t.label}</div>
       <div class="tier-name">${t.emoji} ${t.name}</div>
       <div class="tier-desc">${t.desc}</div>
     </div>
   `).join('');
-}
-
-function checkSalary(val, cityKey) {
-  const city = DATA[cityKey];
-  const result = document.getElementById('result');
-
-  if (!val || val <= 0) {
-    result.innerHTML = '';
-    result.className = 'result';
-    result.style.borderLeftColor = 'var(--muted)';
-    return;
   }
 
-  const tier = city.tiers.find(t => val < t.max) || city.tiers[city.tiers.length - 1];
-  const colors = ['','var(--red)','var(--orange)','var(--yellow)','var(--green)','var(--cyan)','#bf5af2'];
+  function checkSalary(val, cityKey) {
+    const city = DATA[cityKey];
+    const result = document.getElementById('result');
 
-  result.innerHTML = `<span class="result-emoji">${tier.emoji}</span> ${formatNumber(val)} ${city.symbol}/мес — ${tier.name}`;
-  result.className = 'result has-result';
-  result.style.borderLeftColor = colors[tier.color];
-}
+    if (!val || val <= 0) {
+      result.innerHTML = '';
+      result.className = 'result';
+      result.style.borderLeftColor = 'var(--muted)';
+      return;
+    }
 
-document.querySelectorAll('.city-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.city-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentCity = btn.dataset.city;
-    renderTiers(currentCity);
-    const input = document.getElementById('salary-input');
-    input.value = '';
-    document.getElementById('result').innerHTML = '';
-    document.getElementById('result').style.borderLeftColor = 'var(--muted)';
-    input.placeholder = '0';
+    const tier = city.tiers.find(t => val < t.max) || city.tiers[city.tiers.length - 1];
+    const colors = ['','var(--red)','var(--orange)','var(--yellow)','var(--green)','var(--cyan)','#bf5af2'];
+
+    result.innerHTML = `<span class="result-emoji">${tier.emoji}</span> ${formatNumber(val)} ${city.symbol}/мес — ${tier.name}`;
+    result.className = 'result has-result';
+    result.style.borderLeftColor = colors[tier.color];
+  }
+
+  document.querySelectorAll('.city-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.city-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCity = btn.dataset.city;
+      renderTiers(currentCity);
+      const input = document.getElementById('salary-input');
+      input.value = '';
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('result').style.borderLeftColor = 'var(--muted)';
+      input.placeholder = '0';
+    });
   });
-});
 
-const salaryInput = document.getElementById('salary-input');
-salaryInput.addEventListener('input', () => {
-  let raw = salaryInput.value.replace(/[^\d]/g, '');
-  if (raw) {
-    salaryInput.value = formatNumber(parseInt(raw));
-    checkSalary(parseInt(raw), currentCity);
-  } else {
-    salaryInput.value = '';
-    checkSalary(0, currentCity);
-  }
-});
+  const salaryInput = document.getElementById('salary-input');
+  salaryInput.addEventListener('input', () => {
+    let raw = salaryInput.value.replace(/[^\d]/g, '');
+    if (raw) {
+      salaryInput.value = formatNumber(parseInt(raw));
+      checkSalary(parseInt(raw), currentCity);
+    } else {
+      salaryInput.value = '';
+      checkSalary(0, currentCity);
+    }
+  });
 
-renderTiers('msk');
+  renderTiers('msk');
 </script>
 
 </body>
